@@ -1,0 +1,84 @@
+{
+  "version": "1.0.0",
+  "description": "健康标准配置文件",
+  "blood_pressure": {
+    "sbp": {
+      "normal": {"min": 0, "max": 120},
+      "elevated": {"min": 120, "max": 140},
+      "stage1_hypertension": {"min": 140, "max": 160},
+      "stage2_hypertension": {"min": 160, "max": 180},
+      "stage3_hypertension": {"min": 180, "max": 300}
+    },
+    "dbp": {
+      "normal": {"min": 0, "max": 80},
+      "elevated": {"min": 80, "max": 90},
+      "stage1_hypertension": {"min": 90, "max": 100},
+      "stage2_hypertension": {"min": 100, "max": 110},
+      "stage3_hypertension": {"min": 110, "max": 200}
+    },
+    "unit": "mmHg"
+  },
+  "blood_glucose": {
+    "fasting": {
+      "normal": {"min": 0, "max": 6.1},
+      "ifg": {"min": 6.1, "max": 7.0},
+      "diabetes": {"min": 7.0, "max": 100}
+    },
+    "postprandial": {
+      "normal": {"min": 0, "max": 7.8},
+      "igt": {"min": 7.8, "max": 11.1},
+      "diabetes": {"min": 11.1, "max": 100}
+    },
+    "unit": "mmol/L"
+  },
+  "blood_lipid": {
+    "tc": {
+      "optimal": {"min": 0, "max": 5.2},
+      "borderline": {"min": 5.2, "max": 6.2},
+      "high": {"min": 6.2, "max": 100}
+    },
+    "ldl": {
+      "optimal": {"min": 0, "max": 3.4},
+      "borderline": {"min": 3.4, "max": 4.1},
+      "high": {"min": 4.1, "max": 100}
+    },
+    "hdl": {
+      "low": {"min": 0, "max": 1.0},
+      "normal": {"min": 1.0, "max": 100}
+    },
+    "tg": {
+      "optimal": {"min": 0, "max": 1.7},
+      "borderline": {"min": 1.7, "max": 2.3},
+      "high": {"min": 2.3, "max": 100}
+    },
+    "unit": "mmol/L"
+  },
+  "sleep": {
+    "duration": {
+      "insufficient": {"min": 0, "max": 6},
+      "optimal": {"min": 7, "max": 9},
+      "excessive": {"min": 10, "max": 24}
+    },
+    "unit": "hours"
+  },
+  "exercise": {
+    "steps": {
+      "sedentary": {"min": 0, "max": 3000},
+      "low_active": {"min": 3000, "max": 6000},
+      "active": {"min": 6000, "max": 10000},
+      "highly_active": {"min": 10000, "max": 100000}
+    },
+    "unit": "steps/day"
+  },
+  "bmi": {
+    "underweight": {"min": 0, "max": 18.5},
+    "normal": {"min": 18.5, "max": 24},
+    "overweight": {"min": 24, "max": 28},
+    "obese": {"min": 28, "max": 100}
+  },
+  "heart_rate": {
+    "bradycardia": {"min": 0, "max": 60},
+    "normal": {"min": 60, "max": 100},
+    "tachycardia": {"min": 100, "max": 200}
+  }
+}
