@@ -1,0 +1,10 @@
+{
+  "doc_id": "fb280abe8b406235b76819e71f9321b2",
+  "title": "知识库原始文档目录",
+  "content": "# 知识库原始文档目录\n\n## 📚 说明\n\n这个目录用于存放**原始的**知识库文档（上传前的文档文件）。\n\n## 📁 目录结构\n\n```\nknowledge_base/\n├── docs/              # 原始文档目录（本目录）\n│   ├── health/        # 健康知识文档\n│   ├── medication/    # 用药指南\n│   └── faq/          # 常见问题\n├── vectors/          # 向量数据库（自动生成）\n├── documents/        # 索引后的文档（自动生成）\n└── README.md         # 说明文件\n```\n\n## 📝 使用方法\n\n### 方式1：直接上传文件（推荐）\n\n将文档放在这个目录中，然后通过API上传：\n\n```bash\n# 上传文档\ncurl -X POST \"http://localhost:8000/api/knowledge-base/upload\" \\\n  -F \"file=@health/高血压管理指南.txt\" \\\n  -F \"title=高血压管理指南\" \\\n  -F \"source=医疗健康指南\"\n```\n\n### 方式2：使用批量导入脚本\n\n可以创建一个脚本，批量导入本目录下的所有文档。\n\n## 📄 支持的文件格式\n\n- `.txt` - 纯文本文件\n- `.md` - Markdown文件（推荐）\n- `.pdf` - PDF文档\n- `.docx` - Word文档\n\n## 💡 建议\n\n1. **文档命名**：使用有意义的文件名，如 `高血压管理指南.md`\n2. **内容组织**：使用清晰的标题和章节结构\n3. **分类存放**：可以创建子目录按主题分类\n4. **定期更新**：保持文档内容的最新性\n\n## 🚀 快速开始\n\n1. 将你的健康知识文档复制到这个目录\n2. 按照文档类型创建子目录（可选）\n3. 使用API上传文档到知识库\n4. 文档会自动索引，供AI助手使用\n\n",
+  "doc_type": "md",
+  "source": "README.md",
+  "chunks_count": 2,
+  "added_at": "2025-11-30T00:09:59.972050",
+  "metadata": {}
+}

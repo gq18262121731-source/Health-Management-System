@@ -1,0 +1,171 @@
+2025-11-30 21:15:03,028 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:19:33,847 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:20:01,448 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:24:31,322 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'username'), 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ('body', 'password'), 'msg': 'Field required', 'input': None}]
+2025-11-30 21:25:02,956 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'username'), 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ('body', 'password'), 'msg': 'Field required', 'input': None}]
+2025-11-30 21:26:54,266 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'username'), 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ('body', 'password'), 'msg': 'Field required', 'input': None}]
+2025-11-30 21:27:33,863 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'string_too_short', 'loc': ('body', 'phone_number'), 'msg': 'String should have at least 11 characters', 'input': 'test', 'ctx': {'min_length': 11}}]
+2025-11-30 21:27:50,945 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:29:47,879 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:31:40,241 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:33:30,155 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:34:51,477 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 21:36:16,032 - database.database - ERROR - database.py:34 - 数据库会话错误: type object 'User' has no attribute 'phone_number'
+2025-11-30 22:38:01,092 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 00:53:57,211 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 01:09:17,919 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 01:09:24,232 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 01:09:54,335 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:07:31,144 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:10:35,372 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'username'), 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ('body', 'password'), 'msg': 'Field required', 'input': None}]
+2025-12-01 09:11:48,625 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'username'), 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ('body', 'password'), 'msg': 'Field required', 'input': None}]
+2025-12-01 09:15:57,962 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:18:58,381 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:20:00,144 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:21:22,887 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:22:02,945 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:23:07,230 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:24:46,538 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:26:39,307 - database.database - ERROR - database.py:34 - 数据库会话错误: 500: {'error_code': 5001, 'error_msg': '注册失败，请稍后重试', 'detail': "(sqlite3.IntegrityError) NOT NULL constraint failed: users.username\n[SQL: INSERT INTO users (id, username, phone_number, password, role, status, last_login_at) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING created_at, updated_at]\n[parameters: ('eb2a2ae2a46c413fade941a749bfbfae', None, '13832320153', '$pbkdf2-sha256$29000$jhFCiJGyNmbsvbf2XksJAQ$jfmrFrHdteUkC1YVo/7mVaLWIEJrCBsbjMUYb0s78I0', 'ELDERLY', 'ACTIVE', None)]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"}
+2025-12-01 09:26:39,313 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:27:13,932 - database.database - ERROR - database.py:34 - 数据库会话错误: 500: {'error_code': 5001, 'error_msg': '注册失败，请稍后重试', 'detail': "(sqlite3.IntegrityError) NOT NULL constraint failed: users.username\n[SQL: INSERT INTO users (id, username, phone_number, password, role, status, last_login_at) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING created_at, updated_at]\n[parameters: ('480a225e30eb4475b8610ea5bbacf304', None, '13888211518', '$pbkdf2-sha256$29000$4tx7L8V4z3nPGWOMsdb6Pw$z6emvfBYYRob37pwRI6tzTZG3EQpYsu1aiR4a8QxmiQ', 'ELDERLY', 'ACTIVE', None)]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"}
+2025-12-01 09:27:13,939 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:30:13,745 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:30:13,750 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:34:21,709 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:34:21,714 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:34:21,720 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:34:21,724 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:34:21,727 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:40:10,725 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:40:10,731 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:40:10,738 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:40:10,742 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:40:10,746 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:41:12,300 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:41:12,307 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:41:12,312 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:41:12,316 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:41:12,320 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:54:25,728 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:54:25,735 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:54:25,741 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:54:25,746 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:54:25,751 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:56:17,049 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:56:17,054 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:56:17,060 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:56:17,064 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:56:17,068 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:57:53,219 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:57:53,226 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:57:53,232 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:57:53,236 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 09:57:53,240 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:19,079 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:19,087 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:19,095 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:19,100 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:19,104 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:45,151 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:45,157 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:45,162 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:45,167 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:00:45,171 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:03:44,645 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:03:44,654 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:03:44,663 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:03:44,667 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:03:44,671 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:04:43,892 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:04:43,898 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:04:43,904 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:04:43,909 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 10:04:43,913 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 11:09:21,077 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 16:14:05,358 - database.database - ERROR - database.py:34 - 数据库会话错误: 500: {'error_code': 5001, 'error_msg': '注册失败，请稍后重试', 'detail': "(sqlite3.IntegrityError) NOT NULL constraint failed: users.username\n[SQL: INSERT INTO users (id, username, phone_number, password, role, status, last_login_at) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING created_at, updated_at]\n[parameters: ('e4f7d8160b284ce8aeb55af680f291aa', None, '13800138001', '$pbkdf2-sha256$29000$/J/zvpfSuvf.f49xDsHYWw$8iID9t9iIEBWgrfhp0E8A7HPgRZMDSs1CQSdxsGP48Q', 'ELDERLY', 'ACTIVE', None)]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"}
+2025-12-01 16:14:05,368 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-01 16:15:18,161 - database.database - ERROR - database.py:34 - 数据库会话错误: 500: {'error_code': 5001, 'error_msg': '注册失败，请稍后重试', 'detail': "'id_card' is an invalid keyword argument for ElderlyProfile"}
+2025-12-01 16:15:18,203 - database.database - ERROR - database.py:34 - 数据库会话错误: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'access_token'), 'msg': 'Field required', 'input': {'status': 'success', 'data': {'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMGQ4NGQ1MS00Nzc1LTQwMWItYTM2MS0wZGVlNjBmYWM0NGQiLCJyb2xlIjoiZWxkZXJseSIsImV4cCI6MTc2NDU4MDUxOH0.NOAkqc4Hr9QAAvo_HChcfuj0lQL2gsSrRiLtyuObesE', 'token_type': 'bearer', 'expires_in': 3600, 'user_id': '00d84d51-4775-401b-a361-0dee60fac44d', 'username': '13800138001', 'role': <UserRole.ELDERLY: 'elderly'>}, 'message': '登录成功'}}
+  {'type': 'missing', 'loc': ('response', 'user_info'), 'msg': 'Field required', 'input': {'status': 'success', 'data': {'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMGQ4NGQ1MS00Nzc1LTQwMWItYTM2MS0wZGVlNjBmYWM0NGQiLCJyb2xlIjoiZWxkZXJseSIsImV4cCI6MTc2NDU4MDUxOH0.NOAkqc4Hr9QAAvo_HChcfuj0lQL2gsSrRiLtyuObesE', 'token_type': 'bearer', 'expires_in': 3600, 'user_id': '00d84d51-4775-401b-a361-0dee60fac44d', 'username': '13800138001', 'role': <UserRole.ELDERLY: 'elderly'>}, 'message': '登录成功'}}
+
+2025-12-01 16:25:41,175 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:15:51,586 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:16:07,172 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:16:07,197 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:16:07,231 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:16:07,260 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:16:07,298 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:16:07,337 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:20:35,510 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:20:35,537 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:20:35,571 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:20:35,580 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:20:35,602 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:20:35,631 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:24:13,396 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:24:13,431 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:24:13,465 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:24:13,493 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:24:13,526 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:24:13,553 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:25:51,701 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:25:51,730 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:25:51,763 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:25:51,776 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:25:51,812 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:25:51,840 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:26:38,503 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:26:38,524 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:26:38,559 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:26:38,566 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:26:38,589 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-01 19:26:38,618 - database.database - ERROR - database.py:34 - 数据库会话错误: hash could not be identified
+2025-12-02 12:38:47,533 - database.database - ERROR - database.py:34 - 数据库会话错误: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'access_token'), 'msg': 'Field required', 'input': {'status': 'success', 'data': {'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMjhhY2FhZS0zZDc1LTRlNDEtODk2NS0wYzFiOTkwMzA1NjQiLCJyb2xlIjoiZWxkZXJseSIsImV4cCI6MTc2NDY1MzkyN30.0ul1g7hwAQPhRBNCXIrAyMSjCXo2xeaiVL4YM18X0Mg', 'token_type': 'bearer', 'expires_in': 3600, 'user_id': '228acaae-3d75-4e41-8965-0c1b99030564', 'username': '18262121731', 'role': <UserRole.ELDERLY: 'elderly'>}, 'message': '登录成功'}}
+  {'type': 'missing', 'loc': ('response', 'user_info'), 'msg': 'Field required', 'input': {'status': 'success', 'data': {'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMjhhY2FhZS0zZDc1LTRlNDEtODk2NS0wYzFiOTkwMzA1NjQiLCJyb2xlIjoiZWxkZXJseSIsImV4cCI6MTc2NDY1MzkyN30.0ul1g7hwAQPhRBNCXIrAyMSjCXo2xeaiVL4YM18X0Mg', 'token_type': 'bearer', 'expires_in': 3600, 'user_id': '228acaae-3d75-4e41-8965-0c1b99030564', 'username': '18262121731', 'role': <UserRole.ELDERLY: 'elderly'>}, 'message': '登录成功'}}
+
+2025-12-02 12:42:01,031 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: children, 实际角色: UserRole.ELDERLY'}
+2025-12-02 12:42:06,108 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: community, 实际角色: UserRole.ELDERLY'}
+2025-12-02 12:48:42,893 - database.database - ERROR - database.py:34 - 数据库会话错误: 'Settings' object has no attribute 'JWT_SECRET_KEY'
+2025-12-02 12:51:21,080 - database.database - ERROR - database.py:34 - 数据库会话错误: invalid literal for int() with base 10: '228acaae-3d75-4e41-8965-0c1b99030564'
+2025-12-02 12:52:36,469 - database.database - ERROR - database.py:34 - 数据库会话错误: 'User' object has no attribute 'is_active'
+2025-12-02 12:54:15,141 - database.database - ERROR - database.py:34 - 数据库会话错误: 'User' object has no attribute 'is_active'
+2025-12-02 14:44:38,998 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'elderly_id'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}, {'type': 'missing', 'loc': ('body', 'reminder_type'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}, {'type': 'missing', 'loc': ('body', 'content'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}, {'type': 'missing', 'loc': ('body', 'reminder_time'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}]
+2025-12-02 14:44:59,615 - database.database - ERROR - database.py:34 - 数据库会话错误: [{'type': 'missing', 'loc': ('body', 'elderly_id'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}, {'type': 'missing', 'loc': ('body', 'reminder_type'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}, {'type': 'missing', 'loc': ('body', 'content'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}, {'type': 'missing', 'loc': ('body', 'reminder_time'), 'msg': 'Field required', 'input': {'elderId': 'abc', 'type': 'medication', 'title': '吃药提醒', 'scheduledTime': '2025-12-02T08:00:00'}}]
+2025-12-02 19:09:06,659 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4011, 'error_msg': '手机号或密码错误', 'detail': None}
+2025-12-02 19:20:27,474 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: children, 实际角色: UserRole.ELDERLY'}
+2025-12-02 19:20:31,455 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: children, 实际角色: UserRole.ELDERLY'}
+2025-12-02 19:20:32,938 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: children, 实际角色: UserRole.ELDERLY'}
+2025-12-02 19:33:45,143 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 19:44:07,016 - database.database - ERROR - database.py:34 - 数据库会话错误: 'elderly' is not among the defined enum values. Enum name: userrole. Possible values: ELDERLY, CHILDREN, COMMUNITY
+2025-12-02 19:44:16,156 - database.database - ERROR - database.py:34 - 数据库会话错误: 'elderly' is not among the defined enum values. Enum name: userrole. Possible values: ELDERLY, CHILDREN, COMMUNITY
+2025-12-02 19:48:08,621 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 19:48:17,814 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 19:54:21,229 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 19:54:41,793 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 20:54:11,552 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 20:54:16,485 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: children, 实际角色: UserRole.ELDERLY'}
+2025-12-02 20:54:17,689 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: {'error_code': 4012, 'error_msg': '用户角色不匹配', 'detail': '期望角色: children, 实际角色: UserRole.ELDERLY'}
+2025-12-02 20:54:25,274 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 21:04:13,325 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 21:04:36,065 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 21:13:34,355 - database.database - ERROR - database.py:34 - 数据库会话错误: (builtins.AttributeError) 'str' object has no attribute 'hex'
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.phone_number AS users_phone_number, users.password AS users_password, users.role AS users_role, users.status AS users_status, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.last_login_at AS users_last_login_at 
+FROM users 
+WHERE users.id = ?
+ LIMIT ? OFFSET ?]
+[parameters: [{}]]
+2025-12-02 21:15:53,246 - database.database - ERROR - database.py:34 - 数据库会话错误: (builtins.AttributeError) 'str' object has no attribute 'hex'
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.phone_number AS users_phone_number, users.password AS users_password, users.role AS users_role, users.status AS users_status, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.last_login_at AS users_last_login_at 
+FROM users 
+WHERE users.id = ?
+ LIMIT ? OFFSET ?]
+[parameters: [{}]]
+2025-12-02 21:22:22,367 - database.database - ERROR - database.py:34 - 数据库会话错误: 401: 无法验证凭据
+2025-12-02 21:22:28,944 - database.database - ERROR - database.py:34 - 数据库会话错误: (builtins.AttributeError) 'str' object has no attribute 'hex'
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.phone_number AS users_phone_number, users.password AS users_password, users.role AS users_role, users.status AS users_status, users.created_at AS users_created_at, users.updated_at AS users_updated_at, users.last_login_at AS users_last_login_at 
+FROM users 
+WHERE users.id = ?]
+[parameters: [{'pk_1': '7a5abb86-4c0f-47bc-b7d2-be4005a0218c'}]]

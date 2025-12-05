@@ -1,0 +1,142 @@
+1. 老人信息表 elder_info
+用途：存每位老人的基础信息、慢病标签，所有检测/评估都挂在这里。
+字段名	类型	说明
+id	INT UNSIGNED PK AI	主键，自增
+name	VARCHAR(50)	姓名
+gender	TINYINT	性别（0女/1男/2其他或未知）
+birthday	DATE	出生日期
+age	INT	年龄（可选，方便快速统计）
+phone	VARCHAR(20)	联系电话
+address	VARCHAR(255)	居住地址（精确到小区即可）
+height_cm	DECIMAL(5,2)	身高（厘米，可选）
+chronic_tags	VARCHAR(255)	慢病标签，如“高血压;2型糖尿病”
+status	TINYINT	1=在管，0=已离开
+remark	VARCHAR(255)	备注（辅助用具、特殊情况等）
+created_at	DATETIME	创建时间
+updated_at	DATETIME	更新时间
+
+2. 用户账号表 user_account
+用途：家属端 / 社区端 / 老人端统一登录账号。
+字段名	类型	说明
+id	INT UNSIGNED PK AI	主键
+username	VARCHAR(50)	登录名（建议唯一，可用手机号）
+password_hash	VARCHAR(255)	加密后的密码
+role	VARCHAR(20)	角色：ELDER/FAMILY/COMMUNITY/ADMIN
+display_name	VARCHAR(50)	显示昵称
+phone	VARCHAR(20)	联系电话
+email	VARCHAR(100)	邮箱
+status	TINYINT	1=有效，0=禁用
+last_login_at	DATETIME	最近登录时间
+created_at	DATETIME	创建时间
+updated_at	DATETIME	更新时间
+约束示例：
+•	UNIQUE (username)
+•	需要的话再对 phone 建唯一索引。
+
+3. 老人-用户关系表 elder_user_relation
+用途：支持“一个老人多个家属/医生，一个家属/医生管多位老人”。
+字段名	类型	说明
+id	INT UNSIGNED PK AI	主键
+elder_id	INT UNSIGNED	FK → elder_info.id
+user_id	INT UNSIGNED	FK → user_account.id
+relation_type	VARCHAR(20)	关系：CHILD/SPOUSE/DOCTOR/NURSE 等
+is_primary	TINYINT	是否主要联系人（0/1）
+created_at	DATETIME	创建时间
+
+4. 健康检测明细表 health_record （就是你那 20 项体征 + 可选扩展）
+用途：每测一次写一条，是最原始的体征数据表。
+字段名	类型	示例/说明
+id	INT UNSIGNED PK AI	主键
+elder_id	INT UNSIGNED	FK → elder_info.id，这次是给谁测的
+tester_code	VARCHAR(50)	检测人/设备编号：RCDJKUSER0001 等
+check_time	DATETIME	检查时间：2024-07-25 08:58:52
+phone	VARCHAR(20)	当次登记手机号
+age	TINYINT UNSIGNED	当次年龄快照
+spo2	TINYINT UNSIGNED	血氧 98
+spo2_status	VARCHAR(20)	血氧情况：正常/偏低…
+heart_rate	TINYINT UNSIGNED	心率 80
+heart_rate_status	VARCHAR(20)	心率情况
+diastolic_bp	TINYINT UNSIGNED	舒张压 80
+diastolic_bp_status	VARCHAR(20)	舒张压情况
+systolic_bp	TINYINT UNSIGNED	收缩压 120
+systolic_bp_status	VARCHAR(20)	收缩压情况
+pulse_rate	TINYINT UNSIGNED	脉率 83
+pulse_rate_status	VARCHAR(20)	脉率情况
+blood_sugar	DECIMAL(4,1)	血糖 6.0（mmol/L）
+blood_sugar_status	VARCHAR(20)	血糖情况
+uric_acid	INT UNSIGNED	血尿酸 322（μmol/L）
+body_temperature	DECIMAL(3,1)	体温 36.9（℃，入库前去掉“°”）
+health_risk_level	VARCHAR(20)	健康风险：正常/轻度风险/高风险等
+potential_risk_note	VARCHAR(255)	潜在风险：无/有高血压家族史…
+sleep_hours	DECIMAL(4,1)	（可选）睡眠时长
+steps	INT	（可选）步数
+weight_kg	DECIMAL(5,2)	（可选）体重
+data_source	VARCHAR(20)	MANUAL/DEVICE/IMPORT 等
+created_at	DATETIME	创建时间
+updated_at	DATETIME	更新时间
+索引建议：
+•	INDEX idx_record_elder_time (elder_id, check_time DESC)
+5. 评估结果表 assessment_result
+用途：把一段时间内的体征 + 生活方式数据融合，算出综合风险、多病共存结果，给 AI 问诊和预警用。
+5.1 基础与窗口信息
+字段名	类型	说明
+id	INT UNSIGNED PK AI	主键
+elder_id	INT UNSIGNED	FK → elder_info.id
+assessment_time	DATETIME	本次评估生成时间
+window_start_date	DATE	统计窗口起始日期（例：近 30 天）
+window_end_date	DATE	统计窗口结束日期
+data_quality_flag	VARCHAR(20)	OK/LACK/SUSPECT
+data_quality_notes	VARCHAR(255)	数据质量说明
+5.2 综合风险 & 融合结果
+字段名	类型	说明
+overall_risk_level	VARCHAR(20)	综合风险等级 LOW/MEDIUM/HIGH…
+overall_risk_score	DECIMAL(5,2)	综合风险分 0–100
+disease_overall_score	DECIMAL(5,2)	疾病维度总分
+lifestyle_risk_score	DECIMAL(5,2)	生活方式维度分
+trend_risk_score	DECIMAL(5,2)	趋势维度分
+comorbidity_count	INT	合并症数量
+main_diseases	VARCHAR(255)	主要疾病列表：高血压;2型糖尿病…
+topsis_score	DECIMAL(5,3)	TOPSIS 接近度 C
+ahp_weight_disease	DECIMAL(4,3)	AHP 权重（疾病）
+ahp_weight_lifestyle	DECIMAL(4,3)	AHP 权重（生活方式）
+ahp_weight_trend	DECIMAL(4,3)	AHP 权重（趋势）
+5.3 详细 JSON & 趋势/生活方式摘要
+字段名	类型	说明
+disease_summary_json	JSON/TEXT	多病种详细结构（各病种评分、分级等）
+lifestyle_anomaly_score	DECIMAL(4,3)	生活方式异常程度
+sleep_mean_hours	DECIMAL(4,1)	窗口内平均睡眠时长
+steps_mean	INT	平均步数
+lifestyle_risk_factors	VARCHAR(255)	生活方式危险因素摘要
+trend_risk_flag	VARCHAR(20)	趋势：UP/STABLE/DOWN
+trend_notes	VARCHAR(255)	趋势文字描述
+5.4 建议 & 话术 + 元数据
+字段名	类型	说明
+advice_level	VARCHAR(20)	建议等级：OBSERVE/OUTPATIENT/EMERGENCY
+advice_text_elder	TEXT	面向老人的提示话术
+advice_text_family	TEXT	面向家属的解释与行动建议
+key_risk_factors	VARCHAR(255)	关键风险因素摘要
+reason_summary	VARCHAR(255)	综合原因简述
+reason_struct_json	JSON/TEXT	结构化原因（给 AI 用）
+pipeline_version	VARCHAR(50)	流水线版本
+disease_model_version	VARCHAR(50)	疾病模型版本
+lifestyle_model_version	VARCHAR(50)	生活方式模型版本
+trend_model_version	VARCHAR(50)	趋势模型版本
+fuse_strategy	VARCHAR(50)	融合策略，如 AHP+TOPSIS_v1
+extra_meta_json	JSON/TEXT	其它元数据
+created_at	DATETIME	创建时间
+
+6. AI 问诊记录表 ai_consult_log
+用途：记录每次 AI 问诊的问答，用于追溯和优化。
+字段名	类型	说明
+id	INT UNSIGNED PK AI	主键
+elder_id	INT UNSIGNED	针对哪位老人
+user_id	INT UNSIGNED	谁问的（老人/家属/社区账号）
+consult_time	DATETIME	询问时间
+channel	VARCHAR(20)	端：ELDER/FAMILY/COMMUNITY
+question	TEXT	原始问题文本
+answer	TEXT	AI 回复文本
+ref_assessment_id	INT UNSIGNED	关联哪次评估（assessment_result.id）
+risk_level_at_time	VARCHAR(20)	当时的综合风险等级快照
+model_version	VARCHAR(50)	使用的大模型/问诊策略版本
+created_at	DATETIME	创建时间
+

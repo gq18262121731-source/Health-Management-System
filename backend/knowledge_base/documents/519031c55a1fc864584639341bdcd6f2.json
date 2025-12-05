@@ -1,0 +1,10 @@
+{
+  "doc_id": "519031c55a1fc864584639341bdcd6f2",
+  "title": "使用说明",
+  "content": "知识库文档使用说明\n==================\n\n📁 文档存放位置\n---------------\n请将知识库文档放在这个目录中，或创建子目录分类存放。\n\n推荐目录结构：\n- health/        - 健康知识\n- medication/    - 用药指南  \n- faq/          - 常见问题\n- nutrition/    - 营养健康\n- exercise/     - 运动健身\n\n📤 如何上传文档到知识库\n-----------------------\n有两种方式：\n\n方式1：使用API上传（单文件）\n  curl -X POST \"http://localhost:8000/api/knowledge-base/upload\" \\\n    -F \"file=@health/高血压管理指南.txt\" \\\n    -F \"title=高血压管理指南\"\n\n方式2：批量导入（推荐）\n  python ../scripts/batch_import_docs.py\n\n方式3：直接添加文本\n  通过 API /api/knowledge-base/add-text 添加\n\n📄 支持的文件格式\n-----------------\n- .txt    - 纯文本\n- .md     - Markdown（推荐）\n- .pdf    - PDF文档\n- .docx   - Word文档\n\n💡 文档编写建议\n---------------\n1. 使用清晰的标题和章节结构\n2. 内容要专业、准确\n3. 使用Markdown格式，便于阅读和格式化\n4. 每个文档聚焦一个主题\n5. 定期更新，保持内容最新\n\n🎯 示例文档\n-----------\n可以参考以下主题创建文档：\n- 高血压管理指南\n- 糖尿病饮食建议\n- 老年人运动指南\n- 常见疾病预防\n- 用药安全须知\n- 心理健康维护\n\n",
+  "doc_type": "txt",
+  "source": "使用说明.txt",
+  "chunks_count": 2,
+  "added_at": "2025-11-30T00:10:01.740686",
+  "metadata": {}
+}
