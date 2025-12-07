@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>养生之道 · 智能健康报告</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .report-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #4CAF50;
+            margin: 0;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            color: #333;
+            border-left: 4px solid #4CAF50;
+            padding-left: 10px;
+            font-size: 18px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .info-item {
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .info-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .info-value {
+            color: #333;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .status-normal {
+            color: #4CAF50;
+        }
+        .status-warning {
+            color: #FF9800;
+        }
+        .status-danger {
+            color: #f44336;
+        }
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 14px;
+            color: #856404;
+        }
+        .focus-point {
+            background: #e3f2fd;
+            border-left: 3px solid #2196F3;
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="header">
+            <h1>🌿 养生之道 · 智能健康报告</h1>
+            <p>报告对象：张秀英（79 岁）</p>
+            <p>报告时间：2025年12月02日</p>
+        </div>
+        
+        <div class="section">
+            <h2>一、基本信息</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">姓名：</span>
+                    <span class="info-value">张秀英</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">性别：</span>
+                    <span class="info-value">女</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">年龄：</span>
+                    <span class="info-value">79 岁</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">联系电话：</span>
+                    <span class="info-value">13812345678</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">居住地区：</span>
+                    <span class="info-value">广州市天河区天福路88号颐康花园小区3栋502</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">既往记录：</span>
+                    <span class="info-value">高血压 / 2型糖尿病</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>二、关键指标一览</h2>
+            <h3>2.1 生命体征</h3>
+            <table>
+                <tr>
+                    <th>指标</th>
+                    <th>本次结果</th>
+                    <th>系统状态描述</th>
+                </tr>
+                <tr>
+                    <td>血氧</td>
+                    <td>98 %</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+                <tr>
+                    <td>心率</td>
+                    <td>71 次/分</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+                <tr>
+                    <td>收缩压</td>
+                    <td>135 mmHg</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+                <tr>
+                    <td>舒张压</td>
+                    <td>84 mmHg</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+                <tr>
+                    <td>脉率</td>
+                    <td>71 次/分</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+                <tr>
+                    <td>体温</td>
+                    <td>36.4 ℃</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+            </table>
+            
+            <h3>2.2 代谢相关指标</h3>
+            <table>
+                <tr>
+                    <th>指标</th>
+                    <th>本次结果</th>
+                    <th>系统状态描述</th>
+                </tr>
+                <tr>
+                    <td>血糖</td>
+                    <td>6.1 mmol/L</td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+                <tr>
+                    <td>血尿酸</td>
+                    <td>295 </td>
+                    <td class="">暂无数据</td>
+                </tr>
+                <tr>
+                    <td>体重</td>
+                    <td>57.0 kg</td>
+                    <td>已记录</td>
+                </tr>
+                <tr>
+                    <td>BMI</td>
+                    <td>23.7 </td>
+                    <td class="status-normal">位于系统设定参考范围内</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>三、近期变化趋势</h2>
+            <p><strong>统计时间范围：</strong>2024-01-02 ～ 2025-12-02</p>
+            <p><strong>有效检测次数：</strong>10</p>
+            
+            <h3>3.1 血压趋势</h3>
+            <p>统计结果：平均值 138.6 mmHg，最大值 145.0 mmHg，最小值 135.0 mmHg</p>
+            <p>趋势描述：整体波动不大，呈下降趋势</p>
+            
+            <h3>3.2 血糖趋势</h3>
+            <p>统计结果：平均值 6.5 mmol/L，最大值 7.2 mmol/L，最小值 6.1 mmol/L</p>
+            <p>趋势描述：存在一定波动，保持相对稳定</p>
+            
+            <p><strong>趋势综合描述：</strong>在当前统计区间内，收缩压整体波动不大，呈下降趋势；血糖存在一定波动，保持相对稳定；心率整体波动不大，保持相对稳定。</p>
+        </div>
+        
+        <div class="section">
+            <h2>四、系统特征识别小结</h2>
+            <p><strong>指标特征概览：</strong>与个人历史记录相比，本次收缩压数值（135 mmHg）处于个人记录的较低位置</p>
+            <p><strong>组合特征说明：</strong>暂未发现明显的指标组合特征</p>
+            <p><strong>系统标记的关注点：</strong></p>
+            <div class="focus-point">当前各项指标未触发系统关注点</div>
+        </div>
+        
+        <div class="section">
+            <h2>五、历史对比与个体基线</h2>
+            <p>根据过去 90 天记录，系统为该用户生成的收缩压参考区间为 136～140 mmHg（平均 139 mmHg，波动较小）；血糖参考区间为 6.3～6.8 mmol/L（平均 6.5 mmol/L，波动较小）；心率参考区间为 72～76 次/分。</p>
+            <ul>
+                <li><strong>血压对比：</strong>本次收缩压与个人基线水平相近，处于个人历史记录的较低水平</li>
+                <li><strong>血糖对比：</strong>本次血糖略低于个人基线平均值（-6.7%），处于个人历史记录的较低水平</li>
+                <li><strong>其他对比：</strong>本次心率与个人基线水平相近，处于个人历史记录的较低水平</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>六、报告说明</h2>
+            <div class="disclaimer">
+                本报告由「养生之道」系统根据用户日常检测数据自动生成，仅用于帮助用户及家属了解当前数据与变化情况。<br>本报告不包含医疗诊断内容，也不替代任何专业医疗意见。<br>如需获取诊断、治疗或用药等专业信息，请以正规医疗机构和专业人士的意见为准。
+            </div>
+        </div>
+    </div>
+</body>
+</html>

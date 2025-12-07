@@ -1,0 +1,232 @@
+[
+  {
+    "user_id": "elderly_001",
+    "name": "张涛",
+    "gender": "男",
+    "age": 66,
+    "height": 169.6,
+    "weight": 67.2,
+    "bmi": 23.4,
+    "health_status": "healthy",
+    "medical_history": [],
+    "medications": [],
+    "phone": "13786379402",
+    "emergency_contact": "张明(儿子)",
+    "emergency_phone": "18800133890",
+    "address": "北京市石景山区人民路和谐苑9号楼2单元982",
+    "registration_date": "2025-01-21",
+    "profile_id": "healthy_1"
+  },
+  {
+    "user_id": "elderly_002",
+    "name": "徐玉兰",
+    "gender": "女",
+    "age": 66,
+    "height": 166.1,
+    "weight": 60.0,
+    "bmi": 21.7,
+    "health_status": "healthy",
+    "medical_history": [],
+    "medications": [],
+    "phone": "15993103413",
+    "emergency_contact": "徐翠花(儿媳)",
+    "emergency_phone": "15807816184",
+    "address": "北京市朝阳区人民路和谐苑15号楼3单元767",
+    "registration_date": "2024-12-18",
+    "profile_id": "healthy_2"
+  },
+  {
+    "user_id": "elderly_003",
+    "name": "杨涛",
+    "gender": "男",
+    "age": 69,
+    "height": 165.2,
+    "weight": 74.2,
+    "bmi": 27.2,
+    "health_status": "hypertension",
+    "medical_history": [
+      "高血压"
+    ],
+    "medications": [
+      "氨氯地平",
+      "缬沙坦"
+    ],
+    "phone": "15937672423",
+    "emergency_contact": "杨淑芬(老伴)",
+    "emergency_phone": "13750305641",
+    "address": "北京市石景山区中山路祥和里9号楼4单元1736",
+    "registration_date": "2025-07-19",
+    "profile_id": "hypertension_1"
+  },
+  {
+    "user_id": "elderly_004",
+    "name": "刘淑兰",
+    "gender": "女",
+    "age": 77,
+    "height": 156.1,
+    "weight": 59.1,
+    "bmi": 24.3,
+    "health_status": "hypertension",
+    "medical_history": [
+      "高血压",
+      "高血脂"
+    ],
+    "medications": [
+      "硝苯地平",
+      "阿托伐他汀"
+    ],
+    "phone": "13818451462",
+    "emergency_contact": "刘秀兰(老伴)",
+    "emergency_phone": "13669166978",
+    "address": "北京市东城区幸福路安居小区9号楼2单元2180",
+    "registration_date": "2025-06-29",
+    "profile_id": "hypertension_2"
+  },
+  {
+    "user_id": "elderly_005",
+    "name": "吴福生",
+    "gender": "男",
+    "age": 68,
+    "height": 173.8,
+    "weight": 83.4,
+    "bmi": 27.6,
+    "health_status": "diabetes",
+    "medical_history": [
+      "糖尿病前期"
+    ],
+    "medications": [
+      "二甲双胍"
+    ],
+    "phone": "13917182278",
+    "emergency_contact": "吴明(儿子)",
+    "emergency_phone": "15970154303",
+    "address": "北京市海淀区建设路祥和里20号楼4单元968",
+    "registration_date": "2025-01-18",
+    "profile_id": "diabetes_1"
+  },
+  {
+    "user_id": "elderly_006",
+    "name": "杨翠花",
+    "gender": "女",
+    "age": 74,
+    "height": 164.9,
+    "weight": 81.5,
+    "bmi": 30.0,
+    "health_status": "diabetes",
+    "medical_history": [
+      "2型糖尿病",
+      "高血脂"
+    ],
+    "medications": [
+      "二甲双胍",
+      "格列美脲"
+    ],
+    "phone": "13701031051",
+    "emergency_contact": "杨涛(女婿)",
+    "emergency_phone": "18913315098",
+    "address": "北京市丰台区和平街和谐苑16号楼2单元2309",
+    "registration_date": "2025-07-10",
+    "profile_id": "diabetes_2"
+  },
+  {
+    "user_id": "elderly_007",
+    "name": "罗建成",
+    "gender": "男",
+    "age": 73,
+    "height": 168.3,
+    "weight": 71.4,
+    "bmi": 25.2,
+    "health_status": "suboptimal",
+    "medical_history": [
+      "失眠"
+    ],
+    "medications": [
+      "褪黑素"
+    ],
+    "phone": "13738726247",
+    "emergency_contact": "罗桂芳(老伴)",
+    "emergency_phone": "18867010651",
+    "address": "北京市海淀区幸福路康乐园18号楼1单元308",
+    "registration_date": "2025-06-30",
+    "profile_id": "suboptimal_1"
+  },
+  {
+    "user_id": "elderly_008",
+    "name": "林秀英",
+    "gender": "女",
+    "age": 68,
+    "height": 163.7,
+    "weight": 58.6,
+    "bmi": 21.9,
+    "health_status": "suboptimal",
+    "medical_history": [
+      "贫血",
+      "焦虑"
+    ],
+    "medications": [
+      "铁剂"
+    ],
+    "phone": "18946872343",
+    "emergency_contact": "林玉珍(女儿)",
+    "emergency_phone": "18973602606",
+    "address": "北京市朝阳区中山路安居小区18号楼1单元1385",
+    "registration_date": "2025-06-22",
+    "profile_id": "suboptimal_2"
+  },
+  {
+    "user_id": "elderly_009",
+    "name": "罗春生",
+    "gender": "男",
+    "age": 80,
+    "height": 174.5,
+    "weight": 86.0,
+    "bmi": 28.2,
+    "health_status": "multiple",
+    "medical_history": [
+      "高血压",
+      "2型糖尿病",
+      "高血脂",
+      "冠心病"
+    ],
+    "medications": [
+      "氨氯地平",
+      "二甲双胍",
+      "阿司匹林",
+      "阿托伐他汀"
+    ],
+    "phone": "13969985435",
+    "emergency_contact": "罗桂英(女儿)",
+    "emergency_phone": "13936193990",
+    "address": "北京市海淀区建设路康乐园5号楼3单元1973",
+    "registration_date": "2024-12-22",
+    "profile_id": "multiple_1"
+  },
+  {
+    "user_id": "elderly_010",
+    "name": "李秀英",
+    "gender": "女",
+    "age": 82,
+    "height": 155.0,
+    "weight": 68.4,
+    "bmi": 28.5,
+    "health_status": "multiple",
+    "medical_history": [
+      "高血压",
+      "2型糖尿病",
+      "慢性肾病",
+      "骨质疏松"
+    ],
+    "medications": [
+      "硝苯地平",
+      "胰岛素",
+      "钙片",
+      "降压药"
+    ],
+    "phone": "18984980841",
+    "emergency_contact": "李国强(儿子)",
+    "emergency_phone": "13784251354",
+    "address": "北京市海淀区建设路阳光小区4号楼2单元1216",
+    "registration_date": "2025-08-16",
+    "profile_id": "multiple_2"
+  }
+]

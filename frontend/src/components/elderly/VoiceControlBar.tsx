@@ -1,0 +1,499 @@
+/**
+ * 语音控制栏 - 重写版本
+ * 
+ * 修复问题：
+ * 1. useEffect 依赖导致 SpeechRecognition 重复创建
+ * 2. 回调函数引用过时状态
+ * 3. 重复启动导致 aborted 错误
+ */
+
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { Volume2, Square, Mic, MicOff, Loader2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { useVoice } from '../../contexts/VoiceContext';
+
+// 唤醒词列表
+const WAKE_WORDS = ['糖豆糖豆', '糖豆', '你好糖豆', '唐豆'];
+
+// 智能打断配置
+const BARGE_IN_CONFIG = {
+  minSpeechDuration: 300,
+  immediateBargeInWords: ['停', '等等', '等一下', '停止', '别说了', '打断', '暂停', '好了'],
+  noiseWords: ['嗯', '啊', '哦', '呃', '额'],
+};
+
+interface VoiceControlBarProps {
+  className?: string;
+  healthData?: any;
+  userName?: string;
+  onNavigate?: (route: string) => void;
+  onEmergency?: () => void;
+}
+
+export function VoiceControlBar({ 
+  className = '', 
+  healthData, 
+  userName = '您', 
+  onNavigate, 
+  onEmergency 
+}: VoiceControlBarProps) {
+  const { isSpeaking, speak, stop } = useVoice();
+  
+  // UI 状态
+  const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isAwake, setIsAwake] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [interimText, setInterimText] = useState('');
+  const [bargeInStatus, setBargeInStatus] = useState<'idle' | 'detecting' | 'confirmed'>('idle');
+  
+  // Refs - 用于在回调中访问最新状态
+  const recognitionRef = useRef<any>(null);
+  const isListeningRef = useRef(false);
+  const isProcessingRef = useRef(false);
+  const isSpeakingRef = useRef(false);
+  const awakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const speechStartTimeRef = useRef<number | null>(null);
+  const bargeInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 同步 isSpeaking 到 ref
+  useEffect(() => {
+    isSpeakingRef.current = isSpeaking;
+  }, [isSpeaking]);
+
+  // 安全启动识别 - 使用 useCallback 保持引用稳定
+  const safeStart = useCallback(() => {
+    const recognition = recognitionRef.current;
+    if (!recognition) {
+      console.error('❌ 语音识别未初始化');
+      return false;
+    }
+    
+    // 检查是否已在运行 - 通过尝试启动来判断
+    try {
+      recognition.start();
+      console.log('✅ 语音识别已启动');
+      return true;
+    } catch (e: any) {
+      if (e.message?.includes('already started')) {
+        console.log('ℹ️ 识别已在运行中，无需重启');
+        return true; // 已经在运行，也算成功
+      }
+      console.error('❌ 启动失败:', e.message);
+      return false;
+    }
+  }, []);
+
+  // 安全停止识别
+  const safeStop = useCallback(() => {
+    const recognition = recognitionRef.current;
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch (e) {
+        // 忽略停止错误
+      }
+    }
+  }, []);
+
+  // 初始化语音识别 - 只执行一次
+  useEffect(() => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      console.error('浏览器不支持语音识别');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'zh-CN';
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      console.log('🎤 开始监听...');
+      setInterimText('');
+    };
+
+    recognition.onresult = (event: any) => {
+      let interim = '';
+      let final = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const text = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          final += text;
+        } else {
+          interim += text;
+        }
+      }
+      
+      if (interim) {
+        setInterimText(interim);
+        
+        // 智能打断检测 - 使用 ref 检查 isSpeaking
+        if (isSpeakingRef.current) {
+          handleSmartBargeIn(interim);
+        }
+      }
+      
+      if (final) {
+        console.log('📝 识别结果:', final);
+        setTranscript(final);
+        setInterimText('');
+        speechStartTimeRef.current = null;
+        setBargeInStatus('idle');
+        handleVoiceInput(final);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.log('语音识别事件:', event.error);
+      
+      switch (event.error) {
+        case 'no-speech':
+          // 没有检测到语音，如果还在监听就重启
+          if (isListeningRef.current && !isProcessingRef.current) {
+            setTimeout(() => {
+              if (isListeningRef.current) safeStart();
+            }, 300);
+          }
+          break;
+        case 'aborted':
+          // 被中断，这是正常的，忽略
+          break;
+        case 'not-allowed':
+        case 'permission-denied':
+          alert('请允许麦克风权限才能使用语音功能');
+          isListeningRef.current = false;
+          setIsListening(false);
+          setIsAwake(false);
+          break;
+        case 'network':
+          if (isListeningRef.current && !isProcessingRef.current) {
+            setTimeout(() => {
+              if (isListeningRef.current) safeStart();
+            }, 500);
+          }
+          break;
+      }
+    };
+
+    recognition.onend = () => {
+      console.log('🎤 监听结束');
+      // 如果还想监听，重新启动
+      if (isListeningRef.current && !isProcessingRef.current) {
+        setTimeout(() => {
+          if (isListeningRef.current) {
+            safeStart();
+          }
+        }, 300);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    console.log('✅ 语音识别初始化完成');
+
+    return () => {
+      recognition.stop();
+      if (awakeTimeoutRef.current) clearTimeout(awakeTimeoutRef.current);
+      if (bargeInTimeoutRef.current) clearTimeout(bargeInTimeoutRef.current);
+    };
+  }, []); // 空依赖，只初始化一次
+
+  // 智能打断检测
+  const handleSmartBargeIn = (text: string) => {
+    const now = Date.now();
+    
+    if (!speechStartTimeRef.current) {
+      speechStartTimeRef.current = now;
+      setBargeInStatus('detecting');
+      console.log('🎯 检测到用户说话...');
+    }
+    
+    // 噪音词检测
+    if (BARGE_IN_CONFIG.noiseWords.some(w => text.trim() === w)) {
+      return;
+    }
+    
+    // 立即打断词检测
+    if (BARGE_IN_CONFIG.immediateBargeInWords.some(w => text.includes(w))) {
+      console.log('⚡ 检测到打断关键词');
+      confirmBargeIn();
+      return;
+    }
+    
+    // 时长检测
+    const duration = now - speechStartTimeRef.current;
+    if (duration >= BARGE_IN_CONFIG.minSpeechDuration) {
+      console.log(`⏱️ 说话时长 ${duration}ms，确认打断`);
+      confirmBargeIn();
+    }
+  };
+
+  // 确认打断
+  const confirmBargeIn = () => {
+    console.log('🔇 确认打断，停止播报');
+    setBargeInStatus('confirmed');
+    stop();
+    speechStartTimeRef.current = null;
+    if (bargeInTimeoutRef.current) {
+      clearTimeout(bargeInTimeoutRef.current);
+      bargeInTimeoutRef.current = null;
+    }
+  };
+
+  // 处理语音输入
+  const handleVoiceInput = async (text: string) => {
+    if (!text.trim()) return;
+    
+    const isWakeWord = WAKE_WORDS.some(w => text.includes(w));
+    
+    if (isWakeWord || isAwake) {
+      setIsAwake(true);
+      
+      if (awakeTimeoutRef.current) clearTimeout(awakeTimeoutRef.current);
+      awakeTimeoutRef.current = setTimeout(() => {
+        setIsAwake(false);
+        console.log('💤 超时休眠');
+      }, 30000);
+      
+      let cleanText = text;
+      WAKE_WORDS.forEach(w => { cleanText = cleanText.replace(w, ''); });
+      cleanText = cleanText.replace(/^[,，。！？、\s]+/, '').trim();
+      
+      if (!cleanText && isWakeWord) {
+        await speakResponse('我在呢，有什么可以帮您的吗？');
+        return;
+      }
+      
+      if (cleanText) {
+        await processCommand(cleanText);
+      }
+    } else {
+      setTranscript(text + ' (请先说"糖豆")');
+    }
+  };
+
+  // 播放响应
+  const speakResponse = async (text: string) => {
+    isProcessingRef.current = true;
+    setIsProcessing(true);
+    
+    speak(text);
+    
+    // 等待播报完成
+    const duration = Math.max(text.length * 120, 1000);
+    await new Promise(resolve => setTimeout(resolve, duration));
+    
+    isProcessingRef.current = false;
+    setIsProcessing(false);
+  };
+
+  // 处理命令
+  const processCommand = async (text: string) => {
+    isProcessingRef.current = true;
+    setIsProcessing(true);
+    
+    try {
+      const response = await fetch('/api/v1/voice-agent/text-command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, user_role: 'elderly', voice_style: 'default' }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.response) {
+          speak(result.response);
+          const duration = Math.max(result.response.length * 120, 1500);
+          await new Promise(resolve => setTimeout(resolve, duration));
+        }
+        
+        if (result.is_control && result.control_event) {
+          if (result.control_event === 'navigate' && onNavigate) {
+            onNavigate(result.control_data?.route);
+          } else if (result.control_event === 'emergency_call' && onEmergency) {
+            onEmergency();
+          }
+        }
+      } else {
+        speak('抱歉，请求失败了，请再试一次');
+      }
+    } catch (err) {
+      console.error('请求失败:', err);
+      if (['救命', '帮帮我', '呼救'].some(w => text.includes(w))) {
+        speak('紧急呼救已触发！正在通知您的紧急联系人！');
+        onEmergency?.();
+      } else {
+        speak('抱歉，请求失败了，请再试一次');
+      }
+    } finally {
+      isProcessingRef.current = false;
+      setIsProcessing(false);
+      setBargeInStatus('idle');
+    }
+  };
+
+  // 切换语音输入
+  const toggleListening = useCallback(() => {
+    console.log('🔘 toggleListening, 当前状态:', isListening);
+    
+    if (isListening) {
+      // 停止
+      console.log('⏹️ 停止');
+      isListeningRef.current = false;
+      setIsListening(false);
+      setIsAwake(false);
+      setTranscript('');
+      setInterimText('');
+      safeStop();
+      stop();
+    } else {
+      // 开始
+      if (!recognitionRef.current) {
+        alert('您的浏览器不支持语音识别，请使用Chrome或Edge浏览器');
+        return;
+      }
+      
+      console.log('▶️ 开始');
+      isListeningRef.current = true;
+      setIsListening(true);
+      setIsAwake(true);
+      
+      // 启动识别
+      safeStart();
+      
+      if (awakeTimeoutRef.current) clearTimeout(awakeTimeoutRef.current);
+      awakeTimeoutRef.current = setTimeout(() => setIsAwake(false), 30000);
+    }
+  }, [isListening, safeStart, safeStop, stop]);
+
+  // 生成健康数据播报文本
+  const generateHealthReport = (): string => {
+    if (!healthData?.vitalSigns) {
+      return '您好，正在加载健康数据，请稍候。';
+    }
+
+    const vs = healthData.vitalSigns;
+    const act = healthData.activity;
+    const wt = healthData.weight;
+    const name = healthData.userName || userName;
+    
+    let text = `${name}好，以下是您今天的健康数据。`;
+    
+    if (vs.temperature?.value) {
+      text += `体温${vs.temperature.value}摄氏度，${vs.temperature.status || '正常'}。`;
+    }
+    if (vs.heartRate?.value) {
+      text += `心率每分钟${vs.heartRate.value}次，${vs.heartRate.status || '正常'}。`;
+    }
+    if (vs.bloodPressure?.systolic) {
+      text += `血压${vs.bloodPressure.systolic}/${vs.bloodPressure.diastolic}毫米汞柱，${vs.bloodPressure.status || '正常'}。`;
+    }
+    if (vs.bloodSugar?.value) {
+      text += `血糖${vs.bloodSugar.value}毫摩尔每升，${vs.bloodSugar.status || '正常'}。`;
+    }
+    if (act?.steps !== undefined) {
+      const percentage = Math.round((act.steps / (act.goal || 10000)) * 100);
+      text += `今日步数${act.steps}步，完成目标的${percentage}%。`;
+    }
+    if (wt?.value) {
+      text += `体重${wt.value}公斤。`;
+    }
+    
+    text += '总体健康状况良好，请继续保持！';
+    return text;
+  };
+
+  // 朗读页面
+  const handleReadPage = () => {
+    const text = generateHealthReport();
+    speak(text);
+  };
+
+  return (
+    <div className={`flex items-center gap-3 ${className}`}>
+      {/* 语音输入按钮 */}
+      <Button 
+        variant="ghost" 
+        size="lg"
+        disabled={isProcessing}
+        className={`h-12 px-5 gap-2 rounded-lg transition-all ${
+          isListening
+            ? isAwake 
+              ? 'bg-green-500 text-white animate-pulse' 
+              : 'bg-blue-500 text-white'
+            : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
+        }`}
+        onClick={toggleListening}
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span className="text-[20px] font-bold">处理中</span>
+          </>
+        ) : isListening ? (
+          <>
+            <Mic className="h-6 w-6" />
+            <span className="text-[20px] font-bold">
+              {isAwake ? '🟢 已唤醒' : '说"糖豆"'}
+            </span>
+          </>
+        ) : (
+          <>
+            <MicOff className="h-6 w-6" />
+            <span className="text-[20px] font-bold">语音助手</span>
+          </>
+        )}
+      </Button>
+
+      {/* 语音播报按钮 */}
+      <Button 
+        variant="ghost" 
+        size="lg"
+        className={`h-12 px-5 gap-2 rounded-lg transition-all ${
+          isSpeaking 
+            ? 'bg-white/90 text-red-500 animate-pulse' 
+            : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
+        }`}
+        onClick={isSpeaking ? stop : handleReadPage}
+      >
+        {isSpeaking ? (
+          <>
+            <Square className="h-6 w-6" />
+            <span className="text-[20px] font-bold">停止</span>
+          </>
+        ) : (
+          <>
+            <Volume2 className="h-6 w-6" />
+            <span className="text-[20px] font-bold">播报</span>
+          </>
+        )}
+      </Button>
+
+      {/* 实时识别文字提示 */}
+      {isListening && (interimText || transcript) && (
+        <div className="flex flex-col text-white/90 text-sm max-w-48">
+          {interimText && (
+            <span className={`truncate ${
+              bargeInStatus === 'confirmed' 
+                ? 'text-red-300' 
+                : bargeInStatus === 'detecting' 
+                  ? 'text-orange-300 animate-pulse' 
+                  : 'text-yellow-300 animate-pulse'
+            }`}>
+              {bargeInStatus === 'confirmed' ? '⏹️' : '🎤'} {interimText}...
+            </span>
+          )}
+          {transcript && !interimText && (
+            <span className="truncate">
+              ✓ {transcript}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

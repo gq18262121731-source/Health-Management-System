@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "description": "评估系统配置文件",
+  "assessment_weights": {
+    "disease_risk": 0.45,
+    "lifestyle_risk": 0.30,
+    "trend_risk": 0.25
+  },
+  "disease_weights": {
+    "hypertension": 0.40,
+    "diabetes": 0.35,
+    "dyslipidemia": 0.25
+  },
+  "lifestyle_weights": {
+    "sleep": 0.35,
+    "exercise": 0.35,
+    "diet": 0.20,
+    "regularity": 0.10
+  },
+  "risk_thresholds": {
+    "health_level": {
+      "excellent": 85,
+      "good": 70,
+      "suboptimal": 55,
+      "attention_needed": 40,
+      "high_risk": 0
+    },
+    "risk_level": {
+      "low": 25,
+      "medium": 50,
+      "high": 75,
+      "very_high": 100
+    }
+  },
+  "data_completeness": {
+    "complete_threshold": 0.8,
+    "partial_threshold": 0.5,
+    "insufficient_threshold": 0.0
+  },
+  "required_metrics": [
+    "blood_pressure",
+    "blood_glucose",
+    "blood_lipid",
+    "heart_rate",
+    "weight",
+    "sleep",
+    "steps"
+  ],
+  "optional_metrics": [
+    "medication",
+    "diet",
+    "mood",
+    "temperature"
+  ],
+  "default_time_windows": {
+    "weekly": 7,
+    "monthly": 30,
+    "quarterly": 90
+  },
+  "outlier_detection": {
+    "method": "iqr",
+    "iqr_multiplier": 1.5,
+    "zscore_threshold": 3.0
+  },
+  "topsis_criteria_weights": {
+    "severity": 0.35,
+    "urgency": 0.30,
+    "frequency": 0.20,
+    "trend": 0.15
+  },
+  "report_settings": {
+    "max_top_risks": 5,
+    "max_recommendations": 5,
+    "elderly_report_max_items": 3
+  }
+}

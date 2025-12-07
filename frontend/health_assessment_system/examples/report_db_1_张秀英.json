@@ -1,0 +1,154 @@
+{
+  "report_id": "RPT_20251202185944_1",
+  "report_date": "2025年12月02日",
+  "elder_name": "张秀英",
+  "elder_gender": "女",
+  "elder_age": 79,
+  "elder_phone": "13812345678",
+  "elder_address": "广州市天河区天福路88号颐康花园小区3栋502",
+  "elder_chronic_tags": "高血压 / 2型糖尿病",
+  "vital_signs": {
+    "spo2": {
+      "name": "血氧",
+      "value": 98,
+      "unit": "%",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "95 - 100 %"
+    },
+    "heart_rate": {
+      "name": "心率",
+      "value": 71,
+      "unit": "次/分",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "60 - 100 次/分"
+    },
+    "systolic_bp": {
+      "name": "收缩压",
+      "value": 135,
+      "unit": "mmHg",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "90 - 140 mmHg"
+    },
+    "diastolic_bp": {
+      "name": "舒张压",
+      "value": 84,
+      "unit": "mmHg",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "60 - 90 mmHg"
+    },
+    "pulse_rate": {
+      "name": "脉率",
+      "value": 71,
+      "unit": "次/分",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "60 - 100 次/分"
+    },
+    "body_temperature": {
+      "name": "体温",
+      "value": 36.4,
+      "unit": "℃",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "36.0 - 37.3 ℃"
+    }
+  },
+  "metabolic_indicators": {
+    "blood_sugar": {
+      "name": "血糖",
+      "value": 6.1,
+      "unit": "mmol/L",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": ""
+    },
+    "uric_acid": {
+      "name": "uric_acid",
+      "value": 295,
+      "unit": "",
+      "status": "no_data",
+      "status_text": "暂无数据",
+      "reference_range": ""
+    },
+    "weight": {
+      "name": "体重",
+      "value": 57.0,
+      "unit": "kg",
+      "status": "normal",
+      "status_text": "已记录",
+      "reference_range": ""
+    },
+    "bmi": {
+      "name": "BMI",
+      "value": 23.7,
+      "unit": "",
+      "status": "normal",
+      "status_text": "位于系统设定参考范围内",
+      "reference_range": "18.5 - 24.0 "
+    }
+  },
+  "trend_analysis": {
+    "trend_window_start": "2024-01-02",
+    "trend_window_end": "2025-12-02",
+    "valid_check_count": 10,
+    "bp_trend": {
+      "metric_name": "systolic_bp",
+      "avg_value": 138.6,
+      "max_value": 145.0,
+      "min_value": 135.0,
+      "std_value": 3.0397368307141326,
+      "trend_desc": "整体波动不大，呈下降趋势",
+      "stat_text": "平均值 138.6 mmHg，最大值 145.0 mmHg，最小值 135.0 mmHg"
+    },
+    "dbp_trend": null,
+    "sugar_trend": {
+      "metric_name": "blood_sugar",
+      "avg_value": 6.539999999999999,
+      "max_value": 7.2,
+      "min_value": 6.1,
+      "std_value": 0.34117444218463966,
+      "trend_desc": "存在一定波动，保持相对稳定",
+      "stat_text": "平均值 6.5 mmol/L，最大值 7.2 mmol/L，最小值 6.1 mmol/L"
+    },
+    "hr_trend": {
+      "metric_name": "heart_rate",
+      "avg_value": 73.6,
+      "max_value": 78.0,
+      "min_value": 70.0,
+      "std_value": 2.3748684174075834,
+      "trend_desc": "整体波动不大，保持相对稳定",
+      "stat_text": "平均值 73.6 次/分，最大值 78.0 次/分，最小值 70.0 次/分"
+    },
+    "temp_trend": {
+      "metric_name": "body_temperature",
+      "avg_value": 36.47,
+      "max_value": 36.6,
+      "min_value": 36.4,
+      "std_value": 0.06403124237432939,
+      "trend_desc": "整体波动不大，保持相对稳定",
+      "stat_text": "平均值 36.5 ℃，最大值 36.6 ℃，最小值 36.4 ℃"
+    },
+    "weight_trend": null,
+    "uric_acid_trend": null,
+    "trend_overall_text": "在当前统计区间内，收缩压整体波动不大，呈下降趋势；血糖存在一定波动，保持相对稳定；心率整体波动不大，保持相对稳定。"
+  },
+  "feature_recognition": {
+    "feature_overview_text": "与个人历史记录相比，本次收缩压数值（135 mmHg）处于个人记录的较低位置",
+    "combined_feature_text": "暂未发现明显的指标组合特征",
+    "system_focus_points": [
+      "当前各项指标未触发系统关注点"
+    ]
+  },
+  "baseline_comparison": {
+    "baseline_days": 90,
+    "personal_baseline_desc": "根据过去 90 天记录，系统为该用户生成的收缩压参考区间为 136～140 mmHg（平均 139 mmHg，波动较小）；血糖参考区间为 6.3～6.8 mmol/L（平均 6.5 mmol/L，波动较小）；心率参考区间为 72～76 次/分。",
+    "bp_vs_baseline_text": "本次收缩压与个人基线水平相近，处于个人历史记录的较低水平",
+    "sugar_vs_baseline_text": "本次血糖略低于个人基线平均值（-6.7%），处于个人历史记录的较低水平",
+    "others_vs_baseline_text": "本次心率与个人基线水平相近，处于个人历史记录的较低水平"
+  },
+  "disclaimer": "本报告由「养生之道」系统根据用户日常检测数据自动生成，仅用于帮助用户及家属了解当前数据与变化情况。\n本报告不包含医疗诊断内容，也不替代任何专业医疗意见。\n如需获取诊断、治疗或用药等专业信息，请以正规医疗机构和专业人士的意见为准。"
+}
