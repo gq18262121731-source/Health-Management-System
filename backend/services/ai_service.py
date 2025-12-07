@@ -1,4 +1,4 @@
-"""AI健康助手服务"""
+"""AI健康助手服务 - 集成多智能体协作系统"""
 import logging
 import httpx
 from typing import Optional, Dict, Any
@@ -11,6 +11,15 @@ try:
 except ImportError:
     HAS_KNOWLEDGE_BASE = False
     knowledge_base = None
+
+# 导入多智能体系统
+try:
+    from services.agents.multi_agent_service import multi_agent_service
+    HAS_MULTI_AGENT = True
+except ImportError as e:
+    HAS_MULTI_AGENT = False
+    multi_agent_service = None
+    logging.warning(f"多智能体系统加载失败: {e}")
 
 logger = logging.getLogger(__name__)
 
@@ -88,20 +97,60 @@ class AIService:
         elderly_id: Optional[str] = None,
         health_data: Optional[Dict[str, Any]] = None,
         conversation_history: Optional[list] = None,
-        use_knowledge_base: bool = True
+        use_knowledge_base: bool = True,
+        use_multi_agent: bool = True
     ) -> str:
         """
-        进行AI健康咨询
+        进行AI健康咨询 - 集成多智能体协作系统
         
         Args:
             user_input: 用户输入的问题
             user_role: 用户角色 (elderly/children/community)
+            elderly_id: 老人ID
             health_data: 用户健康数据
             conversation_history: 对话历史记录
+            use_knowledge_base: 是否使用知识库
+            use_multi_agent: 是否使用多智能体系统
         
         Returns:
             AI回复文本
         """
+        # ========== 多智能体系统处理 ==========
+        # 优先使用多智能体系统处理专业健康问题
+        if use_multi_agent and HAS_MULTI_AGENT and multi_agent_service:
+            try:
+                # 判断是否需要多智能体协作
+                use_multi_mode = multi_agent_service.should_use_multi_agent(user_input)
+                mode = "multi" if use_multi_mode else "single"
+                
+                result = multi_agent_service.process(
+                    user_input=user_input,
+                    user_id=elderly_id or "default",
+                    health_data=health_data,
+                    mode=mode
+                )
+                
+                agent_response = result.get("response", "")
+                agent_name = result.get("agent", "健康管家")
+                confidence = result.get("confidence", 0)
+                
+                # 如果多智能体置信度高(>=0.7)，直接返回其回复
+                if confidence >= 0.7 and agent_response:
+                    logger.info(f"多智能体处理成功: agent={agent_name}, confidence={confidence:.2f}, mode={mode}")
+                    
+                    # 添加智能体标识
+                    if mode == "multi":
+                        return agent_response
+                    else:
+                        return f"【{agent_name}】\n\n{agent_response}"
+                
+                # 置信度较低时，将多智能体回复作为参考，继续调用大模型增强
+                logger.info(f"多智能体置信度较低({confidence:.2f})，将调用大模型增强回复")
+                
+            except Exception as e:
+                logger.warning(f"多智能体处理失败: {e}，将使用大模型回复")
+        
+        # ========== 大模型 API 调用 ==========
         # 如果API密钥未配置，返回模拟回复
         if not self.provider or not self.api_key:
             return self._get_mock_response(user_input)

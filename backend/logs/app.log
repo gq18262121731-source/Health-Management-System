@@ -667,3 +667,71 @@ WHERE users.id = ?]
 2025-12-06 04:24:02,183 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
 2025-12-06 04:24:02,183 - main - INFO - main.py:26 - 系统版本: 1.0.0
 2025-12-06 04:24:02,193 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 13:52:56,637 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 13:52:56,638 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 13:52:56,655 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 13:54:06,790 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 526d0715-79a9-4d6c-8f43-f32c8936390e, 文本长度: 25
+2025-12-07 13:54:51,335 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 948abd3c-43d7-4a55-8fb9-5ad675f4e329, 文本长度: 47
+2025-12-07 13:54:55,585 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 3aa56dcf-a94c-4790-8e60-5a03163f48d9, 文本长度: 47
+2025-12-07 13:55:04,010 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 6f36b551-84ef-4588-8342-c90d31cde225, 文本长度: 101
+2025-12-07 13:55:14,585 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 76616517-1fc4-4081-8c76-d61f863138ce, 文本长度: 25
+2025-12-07 13:55:39,094 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-07 13:55:46,044 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 13:55:46,044 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 13:55:46,054 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 13:55:57,727 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-07 13:56:03,877 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 13:56:03,877 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 13:56:03,886 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 14:00:28,561 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: e5f363c5-6ea1-4c05-a0e5-fa39d520915e, 文本长度: 25
+2025-12-07 14:01:03,715 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: a7f6e03d-503e-4ffb-870f-8786d70e11b1, 文本长度: 25
+2025-12-07 14:01:24,864 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 14:01:24,865 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 14:01:24,881 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 14:01:48,346 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 582fcefb-b03d-4309-9ff1-ed34d18010a6, 文本长度: 25
+2025-12-07 14:03:07,246 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 23af5c7d-0db6-46fa-9e6a-ab8a8a016567, 文本长度: 25
+2025-12-07 14:04:54,028 - services.agents.multi_agent_service - INFO - multi_agent_service.py:125 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-07 14:04:54,149 - websocket - INFO - _logging.py:89 - Websocket connected
+2025-12-07 14:04:57,461 - services.agents.base_agent - INFO - base_agent.py:192 - [健康管家] LLM调用成功(角色:elderly)，回复长度: 66
+2025-12-07 14:05:01,342 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 57b93b5b-6f49-4e04-a4f7-03a864f36f4a, 文本长度: 66
+2025-12-07 14:17:49,593 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 29afe2d5-e1d4-4bdb-aabe-4fb124160e66, 文本长度: 51
+2025-12-07 14:17:51,736 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: af3edda6-b5d8-4f4c-b945-38597ed2d527, 文本长度: 25
+2025-12-07 14:19:07,378 - services.agents.multi_agent_service - INFO - multi_agent_service.py:125 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-07 14:19:07,490 - websocket - INFO - _logging.py:89 - Websocket connected
+2025-12-07 14:19:09,633 - services.agents.base_agent - INFO - base_agent.py:192 - [健康管家] LLM调用成功(角色:elderly)，回复长度: 41
+2025-12-07 14:19:12,737 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 01a0d093-6472-45ba-8c42-38e7d010a9f5, 文本长度: 41
+2025-12-07 14:19:16,577 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 6e6f588f-d337-4239-9588-b933bbacd04a, 文本长度: 16
+2025-12-07 14:20:46,799 - services.agents.multi_agent_service - INFO - multi_agent_service.py:125 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-07 14:20:46,902 - websocket - INFO - _logging.py:89 - Websocket connected
+2025-12-07 14:20:49,403 - services.agents.base_agent - INFO - base_agent.py:192 - [健康管家] LLM调用成功(角色:elderly)，回复长度: 60
+2025-12-07 14:20:53,271 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: ba50b4cd-413c-4d86-ba6c-11f19481a0e0, 文本长度: 60
+2025-12-07 14:20:56,853 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 882f040f-3960-4d17-8bf7-a452929380ce, 文本长度: 60
+2025-12-07 14:34:15,394 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 14:34:15,394 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 14:34:15,402 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 14:41:34,716 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 578eadd5-0d3f-477e-8606-231ec437b2e0, 文本长度: 44
+2025-12-07 14:42:08,893 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 4e08b7db-0438-4d21-b2b3-542df2bcfb9b, 文本长度: 17
+2025-12-07 14:43:09,571 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: b5b39e60-585b-44cf-b4de-2e514310d4a2, 文本长度: 38
+2025-12-07 14:44:23,420 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 521ef9ce-3342-440c-8099-1419fe2628b5, 文本长度: 56
+2025-12-07 14:45:24,487 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: d780c05d-580d-4034-b165-7139c2ac0337, 文本长度: 43
+2025-12-07 14:45:39,704 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 1308b99d-da1b-4682-9bc2-b3ba0b3f0c84, 文本长度: 22
+2025-12-07 14:46:34,931 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: abdd0222-155b-435a-95d2-84970b4e6f08, 文本长度: 61
+2025-12-07 14:46:47,979 - services.agents.multi_agent_service - INFO - multi_agent_service.py:125 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-07 14:46:48,105 - websocket - INFO - _logging.py:89 - Websocket connected
+2025-12-07 14:46:50,584 - services.agents.base_agent - INFO - base_agent.py:192 - [健康管家] LLM调用成功(角色:elderly)，回复长度: 63
+2025-12-07 14:46:53,439 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 7fe6166a-0247-46f8-8bf6-45d7100aae17, 文本长度: 63
+2025-12-07 14:46:56,513 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: b273a7ee-1df5-4bdd-9d3a-78328e97c690, 文本长度: 63
+2025-12-07 14:47:48,218 - services.voice_service - INFO - voice_service.py:103 - TTS 生成成功: 51b12df5-3318-4d56-9368-9df534fa1dfd, 文本长度: 14
+2025-12-07 14:49:08,469 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-07 14:49:14,802 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 14:49:14,802 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 14:49:14,813 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 14:49:41,143 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-07 14:50:05,028 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 14:50:05,028 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 14:50:05,039 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 14:50:11,868 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-07 14:50:18,359 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-07 14:50:18,360 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-07 14:50:18,370 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-07 14:50:39,904 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...

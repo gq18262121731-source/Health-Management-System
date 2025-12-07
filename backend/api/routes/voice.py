@@ -28,6 +28,14 @@ class TTSRequest(BaseModel):
     volume: Optional[str] = Field("+10%", description="音量 (-50% ~ +50%)")
 
 
+class TTSStreamRequest(BaseModel):
+    """流式TTS请求"""
+    text: str = Field(..., description="要转换的文本", min_length=1, max_length=500)
+    voice: Optional[str] = Field("xiaoxiao", description="语音类型")
+    rate: Optional[str] = Field("+15%", description="语速，默认加快15%")
+    volume: Optional[str] = Field("+10%", description="音量")
+
+
 class TTSResponse(BaseModel):
     """TTS 响应"""
     status: str = "success"
@@ -74,6 +82,78 @@ async def text_to_speech(request: TTSRequest):
         
     except Exception as e:
         logger.error(f"TTS 失败: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"语音合成失败: {str(e)}"
+        )
+
+
+@router.post("/tts/stream")
+async def text_to_speech_stream(request: TTSStreamRequest):
+    """
+    流式TTS - 直接返回音频流（更快）
+    
+    特点：
+    - 不保存文件，直接返回音频流
+    - 边生成边传输，首字节延迟更低
+    - 适合实时语音播报
+    """
+    try:
+        async def generate():
+            async for chunk in voice_service.text_to_speech_stream(
+                text=request.text,
+                voice=request.voice,
+                rate=request.rate,
+                volume=request.volume
+            ):
+                yield chunk
+        
+        return StreamingResponse(
+            generate(),
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": "inline",
+                "Cache-Control": "no-cache",
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"流式TTS失败: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"语音合成失败: {str(e)}"
+        )
+
+
+@router.post("/tts/fast")
+async def text_to_speech_fast(request: TTSStreamRequest):
+    """
+    快速TTS - 直接返回完整音频（不保存文件）
+    
+    比普通TTS快，因为：
+    - 不写入磁盘
+    - 直接返回字节流
+    - 默认语速加快15%
+    """
+    try:
+        audio_data = await voice_service.text_to_speech_fast(
+            text=request.text,
+            voice=request.voice,
+            rate=request.rate,
+            volume=request.volume
+        )
+        
+        return StreamingResponse(
+            iter([audio_data]),
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": "inline",
+                "Cache-Control": "no-cache",
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"快速TTS失败: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"语音合成失败: {str(e)}"

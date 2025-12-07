@@ -4,8 +4,10 @@ import os
 import uuid
 import asyncio
 import tempfile
+import re
+import io
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List, AsyncGenerator
 import edge_tts
 
 logger = logging.getLogger(__name__)
@@ -105,6 +107,92 @@ class VoiceService:
             
         except Exception as e:
             logger.error(f"TTS 生成失败: {e}")
+            raise
+
+    def split_sentences(self, text: str) -> List[str]:
+        """
+        将文本分割成句子（用于流式播放）
+        """
+        # 按中文标点分割
+        sentences = re.split(r'([。！？；，、])', text)
+        
+        # 合并标点和句子
+        result = []
+        current = ""
+        for i, part in enumerate(sentences):
+            current += part
+            # 遇到句末标点，或者当前累积超过15个字，就分割
+            if part in '。！？；' or (part in '，、' and len(current) > 15):
+                if current.strip():
+                    result.append(current.strip())
+                current = ""
+        
+        if current.strip():
+            result.append(current.strip())
+        
+        # 如果没有分割出来，返回原文
+        return result if result else [text]
+
+    async def text_to_speech_stream(
+        self,
+        text: str,
+        voice: str = None,
+        rate: str = "+10%",  # 稍快的语速
+        volume: str = "+10%"
+    ) -> AsyncGenerator[bytes, None]:
+        """
+        流式TTS - 直接返回音频字节流（不保存文件）
+        """
+        try:
+            voice_name = self.VOICES.get(voice or self.default_voice, self.VOICES["xiaoxiao"])
+            
+            communicate = edge_tts.Communicate(
+                text=text,
+                voice=voice_name,
+                rate=rate,
+                volume=volume
+            )
+            
+            # 流式返回音频数据
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    yield chunk["data"]
+                    
+        except Exception as e:
+            logger.error(f"流式TTS失败: {e}")
+            raise
+
+    async def text_to_speech_fast(
+        self,
+        text: str,
+        voice: str = None,
+        rate: str = "+15%",  # 更快的语速
+        volume: str = "+10%"
+    ) -> bytes:
+        """
+        快速TTS - 直接返回音频字节（不保存文件）
+        比 text_to_speech 快，因为不写入磁盘
+        """
+        try:
+            voice_name = self.VOICES.get(voice or self.default_voice, self.VOICES["xiaoxiao"])
+            
+            communicate = edge_tts.Communicate(
+                text=text,
+                voice=voice_name,
+                rate=rate,
+                volume=volume
+            )
+            
+            # 收集所有音频数据
+            audio_data = io.BytesIO()
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio_data.write(chunk["data"])
+            
+            return audio_data.getvalue()
+                    
+        except Exception as e:
+            logger.error(f"快速TTS失败: {e}")
             raise
     
     async def speech_to_text(self, audio_data: bytes, language: str = "zh") -> str:

@@ -11,7 +11,7 @@ from config.settings import settings
 from config.logging import LOGGING_CONFIG
 
 # 导入路由
-from api.routes import auth, elderly, children, community, ai, knowledge_base, voice, realtime_voice, streaming_voice, health_data
+from api.routes import auth, elderly, children, community, ai, knowledge_base, voice, realtime_voice, streaming_voice, health_data, voice_agent
 
 # 初始化日志
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -70,6 +70,8 @@ app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI健康助手"])
 app.include_router(knowledge_base.router, prefix="/api/v1/knowledge-base", tags=["知识库管理"])
 # 语音服务路由
 app.include_router(voice.router, prefix="/api/v1/voice", tags=["语音服务"])
+# 语音智能体路由（语音+多Agent集成）
+app.include_router(voice_agent.router, prefix="/api/v1/voice-agent", tags=["语音智能体"])
 # 实时语音 WebSocket 路由
 app.include_router(realtime_voice.router, prefix="/api/v1/realtime-voice", tags=["实时语音"])
 # 流式语音 WebSocket 路由

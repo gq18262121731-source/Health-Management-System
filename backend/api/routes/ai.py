@@ -312,3 +312,43 @@ async def get_consultation_history(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取咨询历史失败: {str(e)}"
         )
+
+
+@router.get("/agents")
+async def get_agents_info():
+    """
+    获取多智能体系统信息
+    
+    返回所有注册的智能体及其能力
+    """
+    try:
+        from services.agents.multi_agent_service import multi_agent_service
+        
+        agents = multi_agent_service.get_agents_info()
+        
+        return {
+            "status": "success",
+            "data": {
+                "agents": agents,
+                "count": len(agents),
+                "multi_agent_enabled": True
+            },
+            "message": "多智能体系统运行正常"
+        }
+    except ImportError:
+        return {
+            "status": "success",
+            "data": {
+                "agents": [],
+                "count": 0,
+                "multi_agent_enabled": False
+            },
+            "message": "多智能体系统未启用"
+        }
+    except Exception as e:
+        logger.error(f"获取智能体信息失败: {str(e)}")
+        return {
+            "status": "error",
+            "data": {"agents": [], "count": 0, "multi_agent_enabled": False},
+            "message": f"获取智能体信息失败: {str(e)}"
+        }
