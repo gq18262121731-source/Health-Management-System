@@ -4,13 +4,25 @@
 
 专业的慢病风险分析和建议，包括高血压、糖尿病、高血脂等。
 内置中国医学指南标准。
+集成专业评估算法（模糊逻辑、AHP、TOPSIS等）。
 """
 
-from typing import Dict, List, Optional
+import logging
+from typing import Dict, List, Optional, Any
 from .base_agent import (
     BaseAgent, AgentRole, AgentMessage, AgentMemory,
     MessageType, EmotionState
 )
+
+# 导入健康评估算法服务
+try:
+    from services.health_assessment.assessment_service import health_assessment_service
+    HAS_ASSESSMENT = True
+except ImportError:
+    HAS_ASSESSMENT = False
+    health_assessment_service = None
+
+logger = logging.getLogger(__name__)
 
 
 class ChronicDiseaseExpertAgent(BaseAgent):
@@ -274,3 +286,197 @@ class ChronicDiseaseExpertAgent(BaseAgent):
 5. **自我管理**：学习疾病知识，提高自我管理能力
 
 如有具体问题，请告诉我您的具体情况，我会给出更针对性的建议。"""
+    
+    # ========== 集成专业评估算法 ==========
+    
+    def assess_with_algorithm(
+        self,
+        health_data: Dict[str, Any],
+        assessment_type: str = "comprehensive"
+    ) -> Dict[str, Any]:
+        """
+        使用专业算法进行健康评估
+        
+        Args:
+            health_data: 健康数据字典
+            assessment_type: 评估类型 (blood_pressure, blood_sugar, comprehensive)
+        
+        Returns:
+            评估结果字典
+        """
+        if not HAS_ASSESSMENT or health_assessment_service is None:
+            logger.warning("健康评估算法模块未加载，使用规则评估")
+            return self._rule_based_assessment(health_data, assessment_type)
+        
+        try:
+            if assessment_type == "blood_pressure":
+                systolic = health_data.get('systolic_values', [])
+                diastolic = health_data.get('diastolic_values', [])
+                if systolic and diastolic:
+                    return health_assessment_service.assess_blood_pressure(
+                        systolic, diastolic, health_data.get('baseline')
+                    )
+            
+            elif assessment_type == "blood_sugar":
+                fasting = health_data.get('fasting_values', [])
+                postprandial = health_data.get('postprandial_values', [])
+                if fasting:
+                    return health_assessment_service.assess_blood_sugar(
+                        fasting, postprandial, health_data.get('baseline')
+                    )
+            
+            elif assessment_type == "comprehensive":
+                return health_assessment_service.comprehensive_assessment(
+                    health_data, health_data.get('baseline')
+                )
+            
+            elif assessment_type == "trend":
+                metric = health_data.get('metric_name', 'systolic_bp')
+                values = health_data.get('values', [])
+                if values:
+                    return health_assessment_service.analyze_trend(metric, values)
+            
+            return {"error": "不支持的评估类型"}
+            
+        except Exception as e:
+            logger.error(f"算法评估失败: {e}")
+            return self._rule_based_assessment(health_data, assessment_type)
+    
+    def _rule_based_assessment(
+        self,
+        health_data: Dict[str, Any],
+        assessment_type: str
+    ) -> Dict[str, Any]:
+        """基于规则的评估（备用方案）"""
+        if assessment_type == "blood_pressure":
+            systolic = health_data.get('systolic_values', [])
+            diastolic = health_data.get('diastolic_values', [])
+            if systolic and diastolic:
+                avg_sys = sum(systolic) / len(systolic)
+                avg_dia = sum(diastolic) / len(diastolic)
+                
+                # 使用内置的血压分级标准
+                grade = self._get_bp_grade(avg_sys, avg_dia)
+                risk_level = self._bp_grade_to_risk(grade)
+                
+                return {
+                    'disease_name': '高血压',
+                    'risk_level': risk_level,
+                    'risk_score': self._risk_to_score(risk_level),
+                    'control_status': 'fair' if risk_level in ['low', 'medium'] else 'poor',
+                    'key_findings': [f"平均血压: {avg_sys:.0f}/{avg_dia:.0f} mmHg", f"血压分级: {grade}"],
+                    'metric_grades': {'血压分级': grade}
+                }
+        
+        elif assessment_type == "blood_sugar":
+            fasting = health_data.get('fasting_values', [])
+            if fasting:
+                avg_fasting = sum(fasting) / len(fasting)
+                
+                # 使用内置的血糖标准
+                grade = self._get_glucose_grade(avg_fasting)
+                risk_level = 'low' if grade == '正常' else ('medium' if grade == '糖耐量受损' else 'high')
+                
+                return {
+                    'disease_name': '糖尿病',
+                    'risk_level': risk_level,
+                    'risk_score': self._risk_to_score(risk_level),
+                    'control_status': 'good' if risk_level == 'low' else 'fair',
+                    'key_findings': [f"平均空腹血糖: {avg_fasting:.1f} mmol/L", f"血糖分级: {grade}"],
+                    'metric_grades': {'血糖分级': grade}
+                }
+        
+        return {'error': '数据不足'}
+    
+    def _get_bp_grade(self, systolic: float, diastolic: float) -> str:
+        """获取血压分级"""
+        for grade, ranges in self.bp_grades.items():
+            sys_range = ranges['systolic']
+            dia_range = ranges['diastolic']
+            if sys_range[0] <= systolic < sys_range[1] or dia_range[0] <= diastolic < dia_range[1]:
+                return grade
+        return "正常"
+    
+    def _get_glucose_grade(self, fasting: float) -> str:
+        """获取血糖分级"""
+        for grade, ranges in self.glucose_standards.items():
+            fasting_range = ranges['fasting']
+            if fasting_range[0] <= fasting < fasting_range[1]:
+                return grade
+        return "正常"
+    
+    def _bp_grade_to_risk(self, grade: str) -> str:
+        """血压分级转风险等级"""
+        mapping = {
+            "正常": "low",
+            "正常高值": "low",
+            "1级高血压": "medium",
+            "2级高血压": "high",
+            "3级高血压": "very_high"
+        }
+        return mapping.get(grade, "medium")
+    
+    def _risk_to_score(self, risk_level: str) -> float:
+        """风险等级转评分"""
+        mapping = {
+            "low": 25,
+            "medium": 50,
+            "high": 75,
+            "very_high": 90
+        }
+        return mapping.get(risk_level, 50)
+    
+    def get_assessment_summary(self, health_data: Dict[str, Any]) -> str:
+        """
+        获取评估摘要（用于智能体回复）
+        
+        Args:
+            health_data: 健康数据
+        
+        Returns:
+            评估摘要文本
+        """
+        result = self.assess_with_algorithm(health_data, "comprehensive")
+        
+        if 'error' in result:
+            return "数据不足，无法进行完整评估。请提供更多健康数据。"
+        
+        summary_parts = []
+        
+        # 综合评分
+        overall_score = result.get('overall_score', 0)
+        health_level = result.get('health_level', 'unknown')
+        level_names = {
+            'excellent': '优秀',
+            'good': '良好',
+            'suboptimal': '亚健康',
+            'attention_needed': '需关注',
+            'high_risk': '高风险'
+        }
+        summary_parts.append(f"📊 **综合健康评分**: {overall_score:.0f}分 ({level_names.get(health_level, health_level)})")
+        
+        # 疾病风险
+        disease_results = result.get('disease_results', {})
+        if disease_results.get('hypertension'):
+            ht = disease_results['hypertension']
+            summary_parts.append(f"🩺 **高血压风险**: {ht.get('risk_level', 'unknown')} (评分: {ht.get('risk_score', 0):.0f})")
+        
+        if disease_results.get('diabetes'):
+            dm = disease_results['diabetes']
+            summary_parts.append(f"🩺 **糖尿病风险**: {dm.get('risk_level', 'unknown')} (评分: {dm.get('risk_score', 0):.0f})")
+        
+        # TOP风险因素
+        top_risks = result.get('top_risk_factors', [])
+        if top_risks:
+            summary_parts.append("\n⚠️ **重点关注**:")
+            for risk in top_risks[:3]:
+                summary_parts.append(f"  - {risk.get('name', '')}: {risk.get('risk_level', '')}")
+        
+        # 建议
+        recommendations = result.get('recommendations', [])
+        if recommendations:
+            summary_parts.append("\n💡 **建议**:")
+            for rec in recommendations[:3]:
+                summary_parts.append(f"  - {rec}")
+        
+        return "\n".join(summary_parts)

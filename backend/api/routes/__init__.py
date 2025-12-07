@@ -8,6 +8,7 @@ from .health import router as health_router
 from .reminder import router as reminder_router
 from .community import router as community_router
 from .children import router as children_router
+from .health_assessment import router as health_assessment_router
 
 # 创建主路由
 api_router = APIRouter()
@@ -19,5 +20,6 @@ api_router.include_router(health_router)
 api_router.include_router(reminder_router)
 api_router.include_router(community_router)
 api_router.include_router(children_router)
+api_router.include_router(health_assessment_router, prefix="/assessment", tags=["健康评估"])
 
 __all__ = ["api_router"]
