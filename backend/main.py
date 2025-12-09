@@ -11,7 +11,7 @@ from config.settings import settings
 from config.logging import LOGGING_CONFIG
 
 # 导入路由
-from api.routes import auth, elderly, children, community, ai, knowledge_base, voice, realtime_voice, streaming_voice, health_data, voice_agent
+from api.routes import auth, elderly, children, community, ai, knowledge_base, voice, realtime_voice, streaming_voice, health_data, voice_agent, iot_device
 
 # 初始化日志
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -78,6 +78,8 @@ app.include_router(realtime_voice.router, prefix="/api/v1/realtime-voice", tags=
 app.include_router(streaming_voice.router, prefix="/api/v1/streaming", tags=["流式语音"])
 # 健康数据路由
 app.include_router(health_data.router, prefix="/api/health", tags=["健康数据"])
+# IoT 设备数据路由（STM32 + MAX30102）
+app.include_router(iot_device.router, tags=["IoT设备"])
 
 
 @app.get("/")

@@ -34,6 +34,14 @@ except ImportError:
     HAS_MULTI_AGENT = False
     multi_agent_service = None
 
+# 导入自动化服务
+try:
+    from services.automation_service import automation_service
+    HAS_AUTOMATION = True
+except ImportError:
+    HAS_AUTOMATION = False
+    automation_service = None
+
 
 class VoiceEmotion(Enum):
     """语音情感类型"""
@@ -391,13 +399,48 @@ class VoiceAgentService:
         result["emotion"] = emotion.value
         result["emotion_confidence"] = emotion_conf
         
-        # 4. 意图识别（判断是否为控制命令）
+        # 4. 自动化场景匹配（优先级最高）
+        if HAS_AUTOMATION and automation_service:
+            matched_scene = automation_service.match_scene(text)
+            if matched_scene:
+                try:
+                    scene_result = await automation_service.execute_scene(matched_scene)
+                    
+                    # 合并所有语音文本
+                    combined_speech = " ".join(scene_result.get("speak_texts", []))
+                    
+                    result["response"] = combined_speech or f"正在执行{matched_scene.name}"
+                    result["agent"] = "自动化助手"
+                    result["is_automation"] = True
+                    result["automation_scene"] = matched_scene.name
+                    result["frontend_events"] = scene_result.get("frontend_events", [])
+                    result["success"] = True
+                    
+                    logger.info(f"执行自动化场景: {matched_scene.name}")
+                    
+                    # 生成TTS
+                    if result["response"]:
+                        voice_params = self.voice_settings.get_voice_settings(voice_style, emotion)
+                        audio_id, _ = await voice_service.text_to_speech(
+                            result["response"],
+                            voice=voice_params["voice"],
+                            rate=voice_params["rate"],
+                            volume=voice_params["volume"]
+                        )
+                        result["audio_url"] = f"/api/v1/voice/audio/{audio_id}"
+                    
+                    return result
+                    
+                except Exception as e:
+                    logger.error(f"自动化场景执行失败: {e}")
+        
+        # 5. 意图识别（判断是否为控制命令）
         from services.agents.intent_recognizer import intent_recognizer
         intent_result = intent_recognizer.recognize(text)
         intent_type = intent_result.intent.value
         result["intent"] = intent_result.to_dict()
         
-        # 5. 如果是控制命令，走控制逻辑
+        # 6. 如果是控制命令，走控制逻辑
         if intent_type.startswith("control_"):
             try:
                 from services.voice_control_service import voice_control_service
@@ -418,7 +461,7 @@ class VoiceAgentService:
                 logger.error(f"控制命令处理失败: {e}")
                 result["response"] = "抱歉，控制命令执行失败，请再试一次"
         
-        # 6. 非控制命令，走多Agent处理
+        # 7. 非控制命令，走多Agent处理
         elif HAS_MULTI_AGENT and multi_agent_service:
             try:
                 agent_result = multi_agent_service.process(
@@ -507,6 +550,17 @@ class VoiceAgentService:
     def get_wake_words(self) -> list:
         """获取支持的唤醒词"""
         return self.wake_word_detector.WAKE_WORDS
+    
+    def get_automation_scenes(self) -> Dict[str, Any]:
+        """获取可用的自动化场景"""
+        if not HAS_AUTOMATION or automation_service is None:
+            return {"available": False, "scenes": []}
+        
+        return {
+            "available": True,
+            "scenes": automation_service.get_available_scenes(),
+            "keywords": automation_service.get_scene_keywords()
+        }
 
 
 # 单例实例

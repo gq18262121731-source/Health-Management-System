@@ -2,8 +2,10 @@
 意图识别模块
 ============
 
-基于规则 + LLM 的混合意图识别系统。
-先使用规则快速匹配，置信度低时调用LLM精确识别。
+三层混合意图识别系统：
+1. 规则匹配（快速）
+2. 语义匹配（理解同义表达）
+3. LLM 兆底（最准）
 """
 
 import re
@@ -52,11 +54,13 @@ class IntentType(Enum):
     CONTROL_NAVIGATE = "control_navigate"      # 导航控制（去某页面）
     CONTROL_QUERY = "control_query"            # 查询控制（查看数据）
     CONTROL_REMINDER = "control_reminder"      # 提醒控制（设置/取消提醒）
-    CONTROL_CALL = "control_call"              # 通话控制（打电话）
-    CONTROL_DEVICE = "control_device"          # 设备控制（测量血压等）
-    CONTROL_PLAY = "control_play"              # 播放控制（播放音乐/视频）
-    CONTROL_VOLUME = "control_volume"          # 音量控制
     CONTROL_STOP = "control_stop"              # 停止控制
+    
+    # 以下功能暂未实现，保留用于扩展
+    # CONTROL_CALL = "control_call"            # 通话控制（需要电话系统）
+    # CONTROL_DEVICE = "control_device"        # 设备控制（需要蓝牙）
+    # CONTROL_PLAY = "control_play"            # 播放控制（需要媒体播放器）
+    # CONTROL_VOLUME = "control_volume"        # 音量控制（需要系统权限）
     
     # 其他
     EMERGENCY = "emergency"                    # 紧急情况
@@ -86,12 +90,16 @@ class IntentRecognizer:
     """
     意图识别器
     
-    采用规则优先 + LLM兜底的混合策略：
-    1. 先用规则快速匹配（速度快，置信度高）
-    2. 规则匹配失败或置信度低时，调用LLM识别
+    三层混合策略：
+    1. 规则匹配（快速，精确关键词）
+    2. 语义匹配（理解同义表达，如"走路少"→运动）
+    3. LLM 兜底（复杂/模糊情况）
     """
     
     def __init__(self):
+        # 语义匹配器（延迟加载）
+        self.semantic_matcher = None
+        self._init_semantic_matcher()
         # 意图关键词规则库
         self.intent_rules: Dict[IntentType, List[str]] = {
             # 慢病管理
@@ -175,7 +183,9 @@ class IntentRecognizer:
             # 紧急
             IntentType.EMERGENCY: [
                 "急救", "120", "晕倒", "昏迷", "抽搐", "大出血", "呼吸困难",
-                "胸痛持续", "中风", "心梗"
+                "胸痛持续", "中风", "心梗",
+                "救命", "帮帮我", "呼救", "紧急呼叫", "一键呼救", "求助", "SOS",
+                "不舒服", "难受"
             ],
             
             # ========== 语音控制类 ==========
@@ -195,27 +205,6 @@ class IntentRecognizer:
             IntentType.CONTROL_REMINDER: [
                 "提醒我", "设置提醒", "设个闹钟", "取消提醒", "删除提醒",
                 "吃药提醒", "测量提醒", "定时", "几点提醒"
-            ],
-            # 通话控制（包含一键呼救）
-            IntentType.CONTROL_CALL: [
-                "打电话", "拨打", "呼叫", "联系", "给谁打电话",
-                "打给儿子", "打给女儿", "打给子女", "打给医生", "打给社区",
-                "呼救", "救命", "帮帮我", "紧急呼叫", "一键呼救", "求助", "SOS"
-            ],
-            # 设备控制
-            IntentType.CONTROL_DEVICE: [
-                "测量", "测一下", "量一下", "开始测量",
-                "测血压", "测血糖", "测心率", "测体温", "连接设备"
-            ],
-            # 播放控制
-            IntentType.CONTROL_PLAY: [
-                "播放", "放一个", "听", "来一首", "放音乐", "放歌",
-                "播放视频", "看视频", "放养生操", "放太极"
-            ],
-            # 音量控制
-            IntentType.CONTROL_VOLUME: [
-                "大声点", "小声点", "音量", "调大", "调小",
-                "声音大一点", "声音小一点", "静音", "取消静音"
             ],
             # 停止控制
             IntentType.CONTROL_STOP: [
@@ -278,7 +267,15 @@ class IntentRecognizer:
         # 4. 判断是否需要多智能体协作
         requires_multi_agent = len(matched_intents) >= 2 and matched_intents[1][1] >= 0.6
         
-        # 5. 如果置信度低且允许，调用LLM
+        # 5. 如果置信度低，尝试语义匹配
+        if confidence < 0.7 and self.semantic_matcher:
+            semantic_result = self._semantic_match(text)
+            if semantic_result and semantic_result[1] > confidence:
+                primary_intent = semantic_result[0]
+                confidence = semantic_result[1]
+                logger.info(f"🧠 语义匹配提升: {primary_intent.value} ({confidence:.2f})")
+        
+        # 6. 如果仍然置信度低且允许，调用LLM
         if use_llm and confidence < 0.6:
             llm_result = self._llm_recognize(text)
             if llm_result and llm_result[1] > confidence:
@@ -333,6 +330,37 @@ class IntentRecognizer:
                     entities[entity_name] = match.group(1)
         
         return entities
+    
+    def _init_semantic_matcher(self):
+        """初始化语义匹配器（延迟加载，首次使用时才加载模型）"""
+        try:
+            from .semantic_matcher import semantic_matcher, HAS_SENTENCE_TRANSFORMERS
+            if HAS_SENTENCE_TRANSFORMERS:
+                self.semantic_matcher = semantic_matcher
+                logger.info("✅ 语义匹配器已注册（延迟加载）")
+            else:
+                logger.info("ℹ️ 语义匹配不可用，使用规则匹配")
+        except Exception as e:
+            logger.warning(f"语义匹配器加载失败: {e}")
+            self.semantic_matcher = None
+    
+    def _semantic_match(self, text: str) -> Optional[Tuple[IntentType, float]]:
+        """使用语义匹配识别意图"""
+        if not self.semantic_matcher:
+            return None
+        
+        try:
+            result = self.semantic_matcher.match_best(text)
+            if result and result.confidence >= 0.5:
+                # 将字符串意图转换为 IntentType
+                intent_str = result.intent
+                for intent_type in IntentType:
+                    if intent_type.value == intent_str:
+                        return (intent_type, result.confidence)
+            return None
+        except Exception as e:
+            logger.error(f"语义匹配失败: {e}")
+            return None
     
     def _llm_recognize(self, text: str) -> Optional[Tuple[IntentType, float]]:
         """调用LLM识别意图"""

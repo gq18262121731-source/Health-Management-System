@@ -12,9 +12,6 @@ import { Volume2, Square, Mic, MicOff, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useVoice } from '../../contexts/VoiceContext';
 
-// 唤醒词列表
-const WAKE_WORDS = ['糖豆糖豆', '糖豆', '你好糖豆', '唐豆'];
-
 // 智能打断配置
 const BARGE_IN_CONFIG = {
   minSpeechDuration: 300,
@@ -28,6 +25,9 @@ interface VoiceControlBarProps {
   userName?: string;
   onNavigate?: (route: string) => void;
   onEmergency?: () => void;
+  onGenerateReport?: () => void;
+  onSetReminder?: (data: { time?: string; type?: string }) => void;
+  onQueryData?: (type: string) => string | null;  // 返回要播报的文本
 }
 
 export function VoiceControlBar({ 
@@ -35,14 +35,16 @@ export function VoiceControlBar({
   healthData, 
   userName = '您', 
   onNavigate, 
-  onEmergency 
+  onEmergency,
+  onGenerateReport,
+  onSetReminder,
+  onQueryData,
 }: VoiceControlBarProps) {
   const { isSpeaking, speak, stop } = useVoice();
   
   // UI 状态
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isAwake, setIsAwake] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interimText, setInterimText] = useState('');
   const [bargeInStatus, setBargeInStatus] = useState<'idle' | 'detecting' | 'confirmed'>('idle');
@@ -52,7 +54,6 @@ export function VoiceControlBar({
   const isListeningRef = useRef(false);
   const isProcessingRef = useRef(false);
   const isSpeakingRef = useRef(false);
-  const awakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const speechStartTimeRef = useRef<number | null>(null);
   const bargeInTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -143,7 +144,7 @@ export function VoiceControlBar({
         setInterimText('');
         speechStartTimeRef.current = null;
         setBargeInStatus('idle');
-        handleVoiceInput(final);
+        processCommand(final);
       }
     };
 
@@ -167,7 +168,6 @@ export function VoiceControlBar({
           alert('请允许麦克风权限才能使用语音功能');
           isListeningRef.current = false;
           setIsListening(false);
-          setIsAwake(false);
           break;
         case 'network':
           if (isListeningRef.current && !isProcessingRef.current) {
@@ -196,7 +196,6 @@ export function VoiceControlBar({
 
     return () => {
       recognition.stop();
-      if (awakeTimeoutRef.current) clearTimeout(awakeTimeoutRef.current);
       if (bargeInTimeoutRef.current) clearTimeout(bargeInTimeoutRef.current);
     };
   }, []); // 空依赖，只初始化一次
@@ -243,51 +242,114 @@ export function VoiceControlBar({
     }
   };
 
-  // 处理语音输入
-  const handleVoiceInput = async (text: string) => {
-    if (!text.trim()) return;
+  // 处理前端事件
+  const handleFrontendEvent = async (event: string, data: any) => {
+    console.log('🎯 处理前端事件:', event, data);
     
-    const isWakeWord = WAKE_WORDS.some(w => text.includes(w));
-    
-    if (isWakeWord || isAwake) {
-      setIsAwake(true);
-      
-      if (awakeTimeoutRef.current) clearTimeout(awakeTimeoutRef.current);
-      awakeTimeoutRef.current = setTimeout(() => {
-        setIsAwake(false);
-        console.log('💤 超时休眠');
-      }, 30000);
-      
-      let cleanText = text;
-      WAKE_WORDS.forEach(w => { cleanText = cleanText.replace(w, ''); });
-      cleanText = cleanText.replace(/^[,，。！？、\s]+/, '').trim();
-      
-      if (!cleanText && isWakeWord) {
-        await speakResponse('我在呢，有什么可以帮您的吗？');
-        return;
-      }
-      
-      if (cleanText) {
-        await processCommand(cleanText);
-      }
-    } else {
-      setTranscript(text + ' (请先说"糖豆")');
+    switch (event) {
+      case 'navigate':
+        // 页面导航
+        if (onNavigate && data.route) {
+          onNavigate(data.route);
+        }
+        break;
+        
+      case 'query_data':
+        // 健康数据查询播报
+        const queryText = getHealthDataText(data.type);
+        if (queryText) {
+          speak(queryText);
+          await new Promise(r => setTimeout(r, queryText.length * 120 + 500));
+        }
+        break;
+        
+      case 'generate_report':
+        // 生成报告
+        if (onGenerateReport) {
+          onGenerateReport();
+        }
+        break;
+        
+      case 'set_reminder':
+        // 设置提醒
+        if (onSetReminder) {
+          onSetReminder(data);
+        }
+        // 显示提醒设置成功的提示
+        if (data.time) {
+          speak(`好的，已为您设置${data.time}的${data.type === 'medication' ? '吃药' : ''}提醒`);
+        }
+        break;
+        
+      case 'emergency_call':
+        // 紧急呼救
+        if (onEmergency) {
+          onEmergency();
+        }
+        break;
+        
+      case 'stop_speaking':
+        // 停止语音
+        stop();
+        break;
+        
+      case 'cancel_action':
+        // 取消操作
+        stop();
+        break;
+        
+      default:
+        console.log('未知事件类型:', event);
     }
   };
 
-  // 播放响应
-  const speakResponse = async (text: string) => {
-    isProcessingRef.current = true;
-    setIsProcessing(true);
+  // 根据类型获取健康数据播报文本
+  const getHealthDataText = (type: string): string | null => {
+    // 如果有外部查询回调，优先使用
+    if (onQueryData) {
+      const result = onQueryData(type);
+      if (result) return result;
+    }
     
-    speak(text);
+    // 使用本地健康数据
+    if (!healthData?.vitalSigns) {
+      return '正在加载健康数据，请稍候。';
+    }
     
-    // 等待播报完成
-    const duration = Math.max(text.length * 120, 1000);
-    await new Promise(resolve => setTimeout(resolve, duration));
+    const vs = healthData.vitalSigns;
+    const name = healthData.userName || userName;
     
-    isProcessingRef.current = false;
-    setIsProcessing(false);
+    switch (type) {
+      case 'blood_pressure':
+        if (vs.bloodPressure?.systolic) {
+          return `${name}，您的血压是${vs.bloodPressure.systolic}/${vs.bloodPressure.diastolic}毫米汞柱，${vs.bloodPressure.status || '正常'}。`;
+        }
+        return '暂无血压数据。';
+        
+      case 'blood_sugar':
+        if (vs.bloodSugar?.value) {
+          return `${name}，您的血糖是${vs.bloodSugar.value}毫摩尔每升，${vs.bloodSugar.status || '正常'}。`;
+        }
+        return '暂无血糖数据。';
+        
+      case 'heart_rate':
+        if (vs.heartRate?.value) {
+          return `${name}，您的心率是每分钟${vs.heartRate.value}次，${vs.heartRate.status || '正常'}。`;
+        }
+        return '暂无心率数据。';
+        
+      case 'sleep':
+        // TODO: 从后端获取睡眠数据
+        return `${name}，昨晚您睡了约7小时30分钟，睡眠质量良好。`;
+        
+      case 'all':
+      case 'today':
+      case 'health_summary':
+        return generateHealthReport();
+        
+      default:
+        return generateHealthReport();
+    }
   };
 
   // 处理命令
@@ -311,11 +373,17 @@ export function VoiceControlBar({
           await new Promise(resolve => setTimeout(resolve, duration));
         }
         
+        // 处理前端事件
         if (result.is_control && result.control_event) {
-          if (result.control_event === 'navigate' && onNavigate) {
-            onNavigate(result.control_data?.route);
-          } else if (result.control_event === 'emergency_call' && onEmergency) {
-            onEmergency();
+          handleFrontendEvent(result.control_event, result.control_data || {});
+        }
+        
+        // 处理自动化场景事件
+        if (result.is_automation && result.frontend_events) {
+          for (const evt of result.frontend_events) {
+            await handleFrontendEvent(evt.event, evt.data || {});
+            // 事件间稍作延迟
+            await new Promise(r => setTimeout(r, 500));
           }
         }
       } else {
@@ -345,7 +413,6 @@ export function VoiceControlBar({
       console.log('⏹️ 停止');
       isListeningRef.current = false;
       setIsListening(false);
-      setIsAwake(false);
       setTranscript('');
       setInterimText('');
       safeStop();
@@ -360,13 +427,9 @@ export function VoiceControlBar({
       console.log('▶️ 开始');
       isListeningRef.current = true;
       setIsListening(true);
-      setIsAwake(true);
       
       // 启动识别
       safeStart();
-      
-      if (awakeTimeoutRef.current) clearTimeout(awakeTimeoutRef.current);
-      awakeTimeoutRef.current = setTimeout(() => setIsAwake(false), 30000);
     }
   }, [isListening, safeStart, safeStop, stop]);
 
@@ -422,9 +485,7 @@ export function VoiceControlBar({
         disabled={isProcessing}
         className={`h-12 px-5 gap-2 rounded-lg transition-all ${
           isListening
-            ? isAwake 
-              ? 'bg-green-500 text-white animate-pulse' 
-              : 'bg-blue-500 text-white'
+            ? 'bg-green-500 text-white animate-pulse'
             : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
         }`}
         onClick={toggleListening}
@@ -437,9 +498,7 @@ export function VoiceControlBar({
         ) : isListening ? (
           <>
             <Mic className="h-6 w-6" />
-            <span className="text-[20px] font-bold">
-              {isAwake ? '🟢 已唤醒' : '说"糖豆"'}
-            </span>
+            <span className="text-[20px] font-bold">🎤 聆听中</span>
           </>
         ) : (
           <>

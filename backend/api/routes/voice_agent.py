@@ -87,11 +87,6 @@ async def text_command(request: TextCommandRequest):
         # 情感分析
         emotion, emotion_conf = voice_agent_service.emotion_analyzer.analyze(text)
         
-        # 意图识别
-        from services.agents.intent_recognizer import intent_recognizer
-        intent_result = intent_recognizer.recognize(text)
-        intent_type = intent_result.intent.value
-        
         result = {
             "success": True,
             "text": text,
@@ -99,13 +94,59 @@ async def text_command(request: TextCommandRequest):
             "audio_url": None,
             "emotion": emotion.value,
             "is_control": False,
+            "is_automation": False,
             "control_event": None,
             "control_data": None,
+            "frontend_events": [],
             "agent": None,
-            "intent": intent_result.to_dict()
+            "intent": None
         }
         
-        # 如果是控制命令
+        # 1. 先检查自动化场景
+        try:
+            from services.automation_service import automation_service
+            matched_scene = automation_service.match_scene(text)
+            if matched_scene:
+                scene_result = await automation_service.execute_scene(matched_scene)
+                combined_speech = " ".join(scene_result.get("speak_texts", []))
+                
+                result["response"] = combined_speech or f"正在执行{matched_scene.name}"
+                result["agent"] = "自动化助手"
+                result["is_automation"] = True
+                result["automation_scene"] = matched_scene.name
+                result["frontend_events"] = scene_result.get("frontend_events", [])
+                
+                # 生成TTS
+                if result["response"]:
+                    try:
+                        from services.voice_service import voice_service
+                        voice_params = voice_agent_service.voice_settings.get_voice_settings(
+                            style=request.voice_style,
+                            emotion=emotion
+                        )
+                        audio_id, _ = await voice_service.text_to_speech(
+                            result["response"],
+                            voice=voice_params["voice"],
+                            rate=voice_params["rate"],
+                            volume=voice_params["volume"]
+                        )
+                        result["audio_url"] = f"/api/v1/voice/audio/{audio_id}"
+                    except Exception as e:
+                        logger.warning(f"TTS生成失败: {e}")
+                
+                return result
+        except ImportError:
+            pass
+        except Exception as e:
+            logger.error(f"自动化场景匹配失败: {e}")
+        
+        # 2. 意图识别
+        from services.agents.intent_recognizer import intent_recognizer
+        intent_result = intent_recognizer.recognize(text)
+        intent_type = intent_result.intent.value
+        result["intent"] = intent_result.to_dict()
+        
+        # 3. 如果是控制命令
         if intent_type.startswith("control_"):
             from services.voice_control_service import voice_control_service
             
@@ -482,6 +523,29 @@ async def get_control_commands():
             "success": False,
             "error": str(e)
         }
+
+
+@router.get("/automation/scenes")
+async def get_automation_scenes():
+    """
+    获取可用的自动化场景列表
+    
+    自动化场景支持通过语音关键词触发多步骤操作，例如：
+    - "早安" → 播报睡眠情况 + 测量血压 + 设置吃药提醒
+    - "晚安" → 今日健康总结 + 播放助眠音乐
+    - "生成报告发给家人" → 生成报告 + 发送给子女
+    """
+    if not HAS_SERVICE:
+        return {
+            "success": False,
+            "error": "服务不可用"
+        }
+    
+    return {
+        "success": True,
+        "data": voice_agent_service.get_automation_scenes(),
+        "description": "说出关键词即可触发自动化场景"
+    }
 
 
 @router.get("/health")

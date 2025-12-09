@@ -245,27 +245,42 @@ export default function App() {
             healthData={healthData}
             userName={healthData?.userName || '您'}
             onNavigate={(route) => {
-              // 处理语音导航命令
+              // 处理语音导航命令（路由名与后端 voice_control_service.py 对应）
               console.log('语音导航:', route);
               if (route === 'back') {
-                // 返回上一页
                 setShowHistoricalReports(false);
-              } else if (route === '/home' || route === '/') {
+              } else if (route === 'analysis') {
                 setActiveTab('analysis');
                 setShowHistoricalReports(false);
-              } else if (route === '/report') {
+              } else if (route === 'reports') {
                 setActiveTab('reports');
-              } else if (route === '/settings') {
-                setActiveTab('info');
-              } else if (route === '/psychology') {
+              } else if (route === 'consultation') {
+                setActiveTab('consultation');
+              } else if (route === 'psychology') {
                 setActiveTab('psychology');
+              } else if (route === 'myinfo') {
+                setActiveTab('myinfo');
               }
             }}
             onEmergency={() => {
-              // 紧急呼救
+              // 紧急呼救（模拟通知）
               console.log('🚨 紧急呼救触发！');
               alert('🚨 紧急呼救已触发！正在通知您的紧急联系人...');
-              // 这里可以添加实际的紧急呼叫逻辑
+              // TODO: 实际项目中可以发送通知到后端
+            }}
+            onGenerateReport={() => {
+              // 生成报告
+              console.log('📋 语音触发生成报告');
+              setActiveTab('reports');
+              handleGenerateReport();
+            }}
+            onSetReminder={(data) => {
+              // 设置提醒（暂时用 alert 模拟）
+              console.log('⏰ 设置提醒:', data);
+              // TODO: 实现真正的提醒系统
+              if (data.time) {
+                alert(`已设置${data.time}的${data.type === 'medication' ? '吃药' : ''}提醒`);
+              }
             }}
           />
         </div>
