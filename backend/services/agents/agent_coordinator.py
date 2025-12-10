@@ -81,10 +81,11 @@ class AgentCoordinator:
         user_input: str,
         memory: AgentMemory,
         context: Dict = None,
-        user_role: str = "elderly"
+        user_role: str = "elderly",
+        session_id: str = None
     ) -> AgentMessage:
         """
-        处理用户消息（单智能体模式，支持角色适配）
+        处理用户消息（单智能体模式，支持角色适配 + 对话记忆）
         """
         context = context or {}
         
@@ -108,8 +109,8 @@ class AgentCoordinator:
                 emotion=EmotionState.NEUTRAL
             )
         
-        # 智能体处理消息（传递用户角色）
-        response = agent.process(user_message, memory, user_role=user_role)
+        # 智能体处理消息（传递用户角色和会话ID）
+        response = agent.process(user_message, memory, user_role=user_role, session_id=session_id)
         
         # 添加处理信息
         response.metadata["processed_by"] = agent.role.value
@@ -128,10 +129,11 @@ class AgentCoordinator:
         memory: AgentMemory,
         agent_roles: List[AgentRole] = None,
         confidence_threshold: float = 0.6,
-        user_role: str = "elderly"
+        user_role: str = "elderly",
+        session_id: str = None
     ) -> List[AgentMessage]:
         """
-        多智能体协作处理（支持角色适配）
+        多智能体协作处理（支持角色适配 + 对话记忆）
         
         让多个智能体同时处理消息，收集所有响应
         """
@@ -148,7 +150,7 @@ class AgentCoordinator:
             for role in agent_roles:
                 agent = self.agents.get(role)
                 if agent and agent.is_active:
-                    response = agent.process(user_message, memory, user_role=user_role)
+                    response = agent.process(user_message, memory, user_role=user_role, session_id=session_id)
                     response.metadata["processed_by"] = agent.role.value
                     response.metadata["agent_name"] = agent.name
                     responses.append(response)
@@ -158,7 +160,7 @@ class AgentCoordinator:
                 if agent.is_active:
                     confidence = agent.can_handle(user_message, {})
                     if confidence >= confidence_threshold:
-                        response = agent.process(user_message, memory, user_role=user_role)
+                        response = agent.process(user_message, memory, user_role=user_role, session_id=session_id)
                         response.metadata["processed_by"] = agent.role.value
                         response.metadata["agent_name"] = agent.name
                         response.metadata["confidence"] = confidence

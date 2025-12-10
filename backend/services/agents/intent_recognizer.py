@@ -363,50 +363,203 @@ class IntentRecognizer:
             return None
     
     def _llm_recognize(self, text: str) -> Optional[Tuple[IntentType, float]]:
-        """调用LLM识别意图"""
+        """调用LLM识别意图（基础版）"""
+        result = self._llm_recognize_advanced(text)
+        if result:
+            return (result["intent"], result["confidence"])
+        return None
+    
+    def _llm_recognize_advanced(self, text: str) -> Optional[Dict]:
+        """
+        高级LLM意图识别
+        
+        返回：
+        - intent: 主意图
+        - confidence: 置信度
+        - sub_intents: 次要意图列表
+        - entities: 提取的实体
+        - reasoning: 推理过程
+        """
         try:
             from services.spark_service import spark_service
+            import json
             
-            prompt = f"""请识别以下用户输入的意图类别。
+            prompt = f"""你是一个专业的健康助手意图识别系统。请分析用户输入，识别意图并提取关键信息。
 
-用户输入：{text}
+【用户输入】
+{text}
 
-意图类别（只返回一个）：
-- blood_pressure: 血压相关
-- blood_sugar: 血糖相关
-- heart_disease: 心脏相关
-- medication: 用药相关
-- exercise: 运动锻炼
-- diet: 饮食营养
-- sleep: 睡眠问题
-- anxiety: 焦虑担忧
-- loneliness: 孤独寂寞
-- depression: 情绪低落
-- stress: 压力疲惫
-- symptom_report: 症状报告
-- greeting: 问候
-- unknown: 无法识别
+【意图类别说明】
+1. 慢病管理类：
+   - blood_pressure: 血压相关（高血压、低血压、血压数值）
+   - blood_sugar: 血糖相关（糖尿病、血糖数值）
+   - blood_lipid: 血脂相关（胆固醇、甘油三酯）
+   - heart_disease: 心脏相关（心悸、胸闷、心律不齐）
+   - medication: 用药相关（吃药、药物副作用）
 
-请只返回意图类别名称，不要其他内容。"""
+2. 生活方式类：
+   - exercise: 运动锻炼（走路、健身、活动量）
+   - diet: 饮食营养（吃什么、忌口、营养）
+   - sleep: 睡眠问题（失眠、睡不好、早醒）
+   - weight: 体重管理（减肥、超重）
+
+3. 情绪心理类：
+   - anxiety: 焦虑担忧（害怕、紧张、担心）
+   - loneliness: 孤独寂寞（一个人、没人陪）
+   - depression: 情绪低落（难过、不开心）
+   - stress: 压力疲惫（累、撑不住）
+   - positive_emotion: 积极情绪（开心、感谢）
+
+4. 健康咨询类：
+   - symptom_report: 症状报告（不舒服、疼痛、头晕）
+   - data_interpret: 数据解读（指标、报告、正常吗）
+   - health_query: 一般健康问题
+
+5. 交互类：
+   - greeting: 问候
+   - thanks: 感谢
+   - goodbye: 告别
+   - chitchat: 闲聊
+
+6. 特殊类：
+   - emergency: 紧急情况（急救、晕倒、胸痛持续）
+   - unknown: 无法识别
+
+【输出格式】
+请严格按照以下JSON格式输出：
+{{
+    "intent": "主意图类别名称",
+    "confidence": 0.0-1.0之间的置信度,
+    "sub_intents": ["次要意图1", "次要意图2"],
+    "entities": {{
+        "数值类型": "数值",
+        "症状": "症状描述"
+    }},
+    "reasoning": "简短的推理说明"
+}}
+
+【示例】
+输入："我血压150/95，有点头晕，是不是太高了"
+输出：
+{{
+    "intent": "blood_pressure",
+    "confidence": 0.95,
+    "sub_intents": ["symptom_report", "data_interpret"],
+    "entities": {{
+        "systolic": "150",
+        "diastolic": "95",
+        "symptom": "头晕"
+    }},
+    "reasoning": "用户提供了具体血压数值150/95，并询问是否偏高，同时伴有头晕症状"
+}}
+
+请分析并输出JSON："""
 
             response = spark_service.chat(
                 user_input=prompt,
-                system_prompt="你是一个意图识别助手，只返回意图类别名称。",
-                temperature=0.3,
-                max_tokens=50
+                system_prompt="你是一个精准的意图识别系统，只输出JSON格式结果，不要其他内容。",
+                temperature=0.2,
+                max_tokens=300
             )
             
-            # 解析LLM返回
-            response = response.strip().lower()
-            for intent in IntentType:
-                if intent.value in response:
-                    return (intent, 0.8)
+            # 解析JSON
+            result = self._parse_llm_response(response)
+            if result:
+                logger.info(f"🤖 LLM意图识别: {result['intent']} ({result['confidence']:.2f}) - {result.get('reasoning', '')}")
+                return result
             
             return None
             
         except Exception as e:
             logger.error(f"LLM意图识别失败: {e}")
             return None
+    
+    def _parse_llm_response(self, response: str) -> Optional[Dict]:
+        """解析LLM返回的JSON"""
+        import json
+        import re
+        
+        try:
+            # 尝试直接解析
+            result = json.loads(response)
+        except:
+            # 尝试提取JSON部分
+            json_match = re.search(r'\{[\s\S]*\}', response)
+            if json_match:
+                try:
+                    result = json.loads(json_match.group())
+                except:
+                    return None
+            else:
+                return None
+        
+        # 验证并转换意图
+        intent_str = result.get("intent", "unknown")
+        intent_type = IntentType.UNKNOWN
+        
+        for it in IntentType:
+            if it.value == intent_str:
+                intent_type = it
+                break
+        
+        # 转换次要意图
+        sub_intents = []
+        for sub in result.get("sub_intents", []):
+            for it in IntentType:
+                if it.value == sub:
+                    sub_intents.append(it)
+                    break
+        
+        return {
+            "intent": intent_type,
+            "confidence": min(max(float(result.get("confidence", 0.7)), 0.0), 1.0),
+            "sub_intents": sub_intents,
+            "entities": result.get("entities", {}),
+            "reasoning": result.get("reasoning", "")
+        }
+    
+    def recognize_with_llm(self, text: str) -> IntentResult:
+        """
+        使用LLM进行完整意图识别（推荐用于复杂输入）
+        
+        与 recognize() 的区别：
+        - recognize(): 规则优先，LLM兜底
+        - recognize_with_llm(): LLM优先，更准确但更慢
+        """
+        text = text.strip()
+        
+        if not text:
+            return IntentResult(
+                intent=IntentType.UNKNOWN,
+                confidence=0.0,
+                sub_intents=[],
+                entities={},
+                requires_multi_agent=False
+            )
+        
+        # 1. 先用规则快速提取实体
+        entities = self._extract_entities(text)
+        
+        # 2. 调用LLM识别
+        llm_result = self._llm_recognize_advanced(text)
+        
+        if llm_result:
+            # 合并实体
+            merged_entities = {**entities, **llm_result.get("entities", {})}
+            
+            # 判断是否需要多智能体
+            requires_multi = len(llm_result.get("sub_intents", [])) >= 1
+            
+            return IntentResult(
+                intent=llm_result["intent"],
+                confidence=llm_result["confidence"],
+                sub_intents=llm_result.get("sub_intents", []),
+                entities=merged_entities,
+                requires_multi_agent=requires_multi
+            )
+        
+        # LLM失败，回退到规则匹配
+        return self.recognize(text, use_llm=False)
     
     def get_agent_for_intent(self, intent: IntentType) -> str:
         """根据意图返回推荐的智能体"""

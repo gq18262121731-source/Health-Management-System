@@ -376,6 +376,72 @@ async def ai_consult_public(request: PublicConsultRequest):
         )
 
 
+class StreamConsultRequest(BaseModel):
+    """流式AI咨询请求"""
+    user_input: str = Field(..., description="用户输入的问题", min_length=1, max_length=2000)
+    user_role: str = Field(default="elderly", description="用户角色: elderly/children/community")
+    session_id: str = Field(default=None, description="会话ID（用于对话记忆）")
+
+
+@router.post("/consult/stream")
+async def ai_consult_stream(request: StreamConsultRequest):
+    """
+    流式AI健康咨询接口（SSE）
+    
+    支持实时返回AI回复，提升用户体验
+    """
+    from fastapi.responses import StreamingResponse
+    import asyncio
+    import uuid
+    
+    session_id = request.session_id or str(uuid.uuid4())[:8]
+    
+    async def generate():
+        try:
+            from services.agents.multi_agent_service import multi_agent_service
+            from services.spark_service import spark_service
+            
+            # 先进行意图识别和工具调用
+            result = multi_agent_service.process(
+                user_input=request.user_input,
+                user_id=session_id,
+                user_role=request.user_role,
+                session_id=session_id
+            )
+            
+            # 发送智能体信息
+            agent_name = result.get("agent", "健康管家")
+            yield f"data: {{\"type\": \"agent\", \"agent\": \"{agent_name}\"}}\n\n"
+            
+            # 发送完整响应（分块模拟流式）
+            response = result.get("response", "")
+            chunk_size = 10  # 每次发送的字符数
+            
+            for i in range(0, len(response), chunk_size):
+                chunk = response[i:i+chunk_size]
+                # 转义特殊字符
+                chunk_escaped = chunk.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+                yield f"data: {{\"type\": \"content\", \"content\": \"{chunk_escaped}\"}}\n\n"
+                await asyncio.sleep(0.05)  # 模拟流式效果
+            
+            # 发送完成信号
+            yield f"data: {{\"type\": \"done\", \"session_id\": \"{session_id}\"}}\n\n"
+            
+        except Exception as e:
+            logger.error(f"流式咨询错误: {e}")
+            yield f"data: {{\"type\": \"error\", \"message\": \"{str(e)}\"}}\n\n"
+    
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+
 @router.get("/agents")
 async def get_agents_info():
     """

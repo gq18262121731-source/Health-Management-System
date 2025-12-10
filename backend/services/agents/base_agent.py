@@ -162,10 +162,14 @@ class BaseAgent(ABC):
         history: List[Dict[str, str]] = None,
         user_role: str = "elderly",
         elderly_id: str = None,
-        use_rag: bool = True
+        use_rag: bool = True,
+        session_id: str = None,
+        use_tools: bool = True,
+        intent: str = None,
+        entities: Dict = None
     ) -> str:
         """
-        调用讯飞星火大模型（集成RAG知识库检索）
+        调用讯飞星火大模型（集成RAG知识库检索 + 对话记忆 + 工具调用 + 多轮追问）
         
         Args:
             user_input: 用户输入
@@ -174,6 +178,10 @@ class BaseAgent(ABC):
             user_role: 用户角色 (elderly/children/community)
             elderly_id: 老人ID（用于个性化RAG检索）
             use_rag: 是否使用RAG知识库增强
+            session_id: 会话ID（用于对话记忆）
+            use_tools: 是否使用工具调用
+            intent: 识别的意图（用于多轮追问）
+            entities: 提取的实体（用于多轮追问）
             
         Returns:
             大模型回复
@@ -184,6 +192,33 @@ class BaseAgent(ABC):
             # 根据用户角色生成适配的系统提示词
             if system_prompt is None:
                 system_prompt = self.get_role_adapted_prompt(user_role)
+            
+            # ========== 对话记忆增强 ==========
+            if session_id:
+                memory_context = self._get_memory_context(session_id, user_input)
+                if memory_context:
+                    system_prompt = f"{system_prompt}\n\n{memory_context}"
+                    logger.info(f"[{self.name}] 对话记忆已注入")
+                
+                # 获取历史对话（如果没有传入history）
+                if history is None:
+                    history = self._get_chat_history(session_id)
+            
+            # ========== 工具调用增强 ==========
+            tool_context = ""
+            if use_tools:
+                tool_context = self._execute_tools_if_needed(user_input, session_id)
+                if tool_context:
+                    system_prompt = f"{system_prompt}\n\n{tool_context}"
+                    logger.info(f"[{self.name}] 工具调用结果已注入")
+            
+            # ========== 多轮追问增强 ==========
+            follow_up_prompt = ""
+            if intent:
+                follow_up_prompt = self._get_follow_up_prompt(user_input, intent, entities or {}, session_id)
+                if follow_up_prompt:
+                    system_prompt = f"{system_prompt}\n\n{follow_up_prompt}"
+                    logger.info(f"[{self.name}] 追问提示已注入")
             
             # ========== RAG 知识库检索增强 ==========
             if use_rag:
@@ -200,12 +235,181 @@ class BaseAgent(ABC):
                 max_tokens=2048
             )
             
-            logger.info(f"[{self.name}] LLM调用成功(角色:{user_role}, RAG:{use_rag})，回复长度: {len(response)}")
+            # ========== 回答质量检查 ==========
+            response = self._check_response_quality(response, {
+                "user_input": user_input,
+                "intent": intent or ""
+            })
+            
+            # ========== 保存对话到记忆 ==========
+            if session_id:
+                self._save_to_memory(session_id, user_input, response)
+            
+            logger.info(f"[{self.name}] LLM调用成功(角色:{user_role}, RAG:{use_rag}, 工具:{bool(tool_context)}, 追问:{bool(follow_up_prompt)}, 记忆:{bool(session_id)})，回复长度: {len(response)}")
             return response
             
         except Exception as e:
             logger.error(f"[{self.name}] LLM调用失败: {e}")
             return self.get_fallback_response(user_input)
+    
+    def _get_follow_up_prompt(self, user_input: str, intent: str, entities: Dict, session_id: str = None) -> str:
+        """
+        获取多轮追问提示
+        
+        Args:
+            user_input: 用户输入
+            intent: 识别的意图
+            entities: 提取的实体
+            session_id: 会话ID
+            
+        Returns:
+            追问提示词
+        """
+        try:
+            from services.agents.follow_up import follow_up_manager
+            
+            should_ask, prompt = follow_up_manager.should_follow_up(
+                user_input=user_input,
+                intent=intent,
+                entities=entities,
+                session_id=session_id
+            )
+            
+            return prompt if should_ask else ""
+        except Exception as e:
+            logger.debug(f"[{self.name}] 追问检查失败: {e}")
+            return ""
+    
+    def _check_response_quality(self, response: str, context: Dict = None) -> str:
+        """
+        检查回答质量，确保安全性
+        
+        Args:
+            response: AI的回答
+            context: 上下文信息
+            
+        Returns:
+            检查/修改后的回答
+        """
+        try:
+            from services.agents.response_checker import response_checker
+            
+            result = response_checker.check(response, context)
+            
+            if not result.passed:
+                logger.warning(f"[{self.name}] 回答质量检查未通过: {result.issues}")
+            
+            # 返回修改后的回答（添加了安全提醒等）
+            return result.modified_response
+        except Exception as e:
+            logger.debug(f"[{self.name}] 质量检查失败: {e}")
+            return response
+    
+    def _execute_tools_if_needed(self, user_input: str, session_id: str = None) -> str:
+        """
+        根据用户输入判断是否需要调用工具
+        
+        Args:
+            user_input: 用户输入
+            session_id: 会话ID
+            
+        Returns:
+            工具调用结果上下文
+        """
+        try:
+            from services.agents.agent_tools import agent_tools
+            
+            # 判断是否需要查询健康数据
+            tool_triggers = {
+                "query_health_records": ["最近血压", "血压记录", "血糖记录", "健康数据", "最近的数据", "查一下"],
+                "query_health_trend": ["血压趋势", "变化趋势", "这段时间", "最近怎么样"],
+                "query_recent_alerts": ["预警", "警报", "异常", "有什么问题"],
+                "query_medications": ["吃什么药", "用药", "药物", "提醒吃药"],
+            }
+            
+            results = []
+            for tool_name, triggers in tool_triggers.items():
+                if any(t in user_input for t in triggers):
+                    result = agent_tools.call(tool_name, user_id=session_id)
+                    if result.success:
+                        results.append(f"【{tool_name}查询结果】\n{result.to_context()}")
+            
+            if results:
+                return "【用户健康数据】\n以下是从系统中查询到的用户健康数据，请基于这些数据回答：\n\n" + "\n\n".join(results)
+            
+            return ""
+        except Exception as e:
+            logger.debug(f"[{self.name}] 工具调用失败: {e}")
+            return ""
+    
+    def _get_memory_context(self, session_id: str, user_input: str) -> str:
+        """
+        获取对话记忆上下文
+        
+        Args:
+            session_id: 会话ID
+            user_input: 当前用户输入
+            
+        Returns:
+            记忆上下文字符串
+        """
+        try:
+            from services.conversation_memory import conversation_memory
+            
+            context = conversation_memory.get_context_summary(session_id)
+            if context:
+                return f"【用户记忆档案】\n{context}\n\n请根据以上用户信息，提供个性化的回答。"
+            return ""
+        except Exception as e:
+            logger.debug(f"[{self.name}] 获取记忆失败: {e}")
+            return ""
+    
+    def _get_chat_history(self, session_id: str) -> List[Dict[str, str]]:
+        """
+        获取对话历史
+        
+        Args:
+            session_id: 会话ID
+            
+        Returns:
+            对话历史列表
+        """
+        try:
+            from services.conversation_memory import conversation_memory
+            return conversation_memory.get_chat_history_for_llm(session_id, limit=5)
+        except Exception as e:
+            logger.debug(f"[{self.name}] 获取对话历史失败: {e}")
+            return []
+    
+    def _save_to_memory(self, session_id: str, user_input: str, response: str):
+        """
+        保存对话到记忆
+        
+        Args:
+            session_id: 会话ID
+            user_input: 用户输入
+            response: AI回复
+        """
+        try:
+            from services.conversation_memory import conversation_memory
+            
+            # 保存用户消息
+            conversation_memory.add_message(
+                session_id=session_id,
+                role="user",
+                content=user_input,
+                metadata={"agent": self.name}
+            )
+            
+            # 保存AI回复
+            conversation_memory.add_message(
+                session_id=session_id,
+                role="assistant",
+                content=response,
+                metadata={"agent": self.name}
+            )
+        except Exception as e:
+            logger.debug(f"[{self.name}] 保存记忆失败: {e}")
     
     def _retrieve_rag_context(self, user_input: str, elderly_id: str = None) -> str:
         """

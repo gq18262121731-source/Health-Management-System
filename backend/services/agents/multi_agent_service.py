@@ -87,10 +87,11 @@ class MultiAgentService:
         user_id: str = "default",
         user_role: str = "elderly",
         health_data: Optional[Dict[str, Any]] = None,
-        mode: str = "auto"
+        mode: str = "auto",
+        session_id: str = None
     ) -> Dict[str, Any]:
         """
-        处理用户输入（含意图识别 + 角色适配）
+        处理用户输入（含意图识别 + 角色适配 + 对话记忆）
         
         Args:
             user_input: 用户输入文本
@@ -98,6 +99,7 @@ class MultiAgentService:
             user_role: 用户角色 ("elderly": 老年人, "children": 子女, "community": 社区)
             health_data: 用户健康数据
             mode: 处理模式 ("auto": 自动, "single": 单智能体, "multi": 多智能体协作)
+            session_id: 会话ID（用于对话记忆，不传则使用user_id）
         
         Returns:
             {
@@ -142,21 +144,25 @@ class MultiAgentService:
         
         memory = self.get_memory(user_id)
         
+        # 使用 session_id 或 user_id 作为会话标识
+        effective_session_id = session_id or user_id
+        
         # 设置上下文
         if health_data:
             memory.set_context("health_data", health_data)
         memory.set_context("intent", intent_result.to_dict())
         memory.set_context("entities", intent_result.entities)
         memory.set_context("user_role", user_role)  # 保存用户角色
+        memory.set_context("session_id", effective_session_id)  # 保存会话ID
         
         # ========== 自动选择处理模式 ==========
         if mode == "auto":
             mode = "multi" if intent_result.requires_multi_agent else "single"
         
         if mode == "multi":
-            result = self._multi_agent_process(user_input, memory, user_role)
+            result = self._multi_agent_process(user_input, memory, user_role, effective_session_id)
         else:
-            result = self._single_agent_process(user_input, memory, user_role)
+            result = self._single_agent_process(user_input, memory, user_role, effective_session_id)
         
         # 添加意图和角色信息到返回结果
         result["intent"] = intent_result.to_dict()
@@ -167,10 +173,13 @@ class MultiAgentService:
         self,
         user_input: str,
         memory: AgentMemory,
-        user_role: str = "elderly"
+        user_role: str = "elderly",
+        session_id: str = None
     ) -> Dict[str, Any]:
         """单智能体处理模式"""
-        response = self.coordinator.process_message(user_input, memory, user_role=user_role)
+        response = self.coordinator.process_message(
+            user_input, memory, user_role=user_role, session_id=session_id
+        )
         
         return {
             "response": response.content,
@@ -184,14 +193,16 @@ class MultiAgentService:
         self,
         user_input: str,
         memory: AgentMemory,
-        user_role: str = "elderly"
+        user_role: str = "elderly",
+        session_id: str = None
     ) -> Dict[str, Any]:
         """多智能体协作模式"""
         responses = self.coordinator.multi_agent_process(
             user_input, 
             memory,
             confidence_threshold=0.6,
-            user_role=user_role
+            user_role=user_role,
+            session_id=session_id
         )
         
         if not responses:
