@@ -1,252 +1,167 @@
-"""知识库服务 - RAG（检索增强生成）"""
+"""
+知识库服务 - LangChain RAG 实现
+================================
+
+使用 LangChain + ChromaDB 实现更强大的 RAG 功能。
+
+特点：
+1. 持久化向量存储 (ChromaDB)
+2. 更好的文档分块策略
+3. 支持多种文档格式
+4. 更灵活的检索策略
+"""
 import logging
 import os
-import json
-import ssl
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from pathlib import Path
-import hashlib
-from datetime import datetime
-
-# 解决 SSL 证书验证问题
-os.environ['CURL_CA_BUNDLE'] = ''
-os.environ['REQUESTS_CA_BUNDLE'] = ''
-os.environ['HF_HUB_DISABLE_SSL_VERIFICATION'] = '1'
-
-try:
-    import urllib3
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-except ImportError:
-    pass
-
-try:
-    import numpy as np
-    import faiss
-    from sentence_transformers import SentenceTransformer
-    HAS_DEPS = True
-except ImportError:
-    HAS_DEPS = False
 
 logger = logging.getLogger(__name__)
 
+# 检查依赖
+try:
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    from langchain_community.vectorstores import Chroma
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    from langchain_core.documents import Document
+    HAS_LANGCHAIN = True
+except ImportError:
+    HAS_LANGCHAIN = False
+    logger.warning("LangChain 依赖未安装，请运行: pip install langchain langchain-community chromadb langchain-text-splitters")
 
-class KnowledgeBase:
-    """知识库类，实现文档向量化和检索功能"""
+
+class SiliconFlowEmbeddings:
+    """硅基流动嵌入模型封装（兼容LangChain接口）"""
     
-    def __init__(self, kb_dir: str = "./knowledge_base"):
+    def __init__(self):
+        from services.siliconflow_service import siliconflow_service
+        self.service = siliconflow_service
+        self.model = "BAAI/bge-m3"
+    
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """批量嵌入文档"""
+        embeddings = []
+        for text in texts:
+            try:
+                emb = self.service.get_embedding(text, model=self.model)
+                embeddings.append(emb)
+            except Exception as e:
+                logger.error(f"嵌入失败: {e}")
+                embeddings.append([0.0] * 1024)  # BGE-M3 维度
+        return embeddings
+    
+    def embed_query(self, text: str) -> List[float]:
+        """嵌入查询"""
+        try:
+            return self.service.get_embedding(text, model=self.model)
+        except Exception as e:
+            logger.error(f"查询嵌入失败: {e}")
+            return [0.0] * 1024
+
+
+class LangChainKnowledgeBase:
+    """
+    基于 LangChain 的知识库
+    
+    功能：
+    - 文档导入和分块
+    - 向量化存储 (ChromaDB)
+    - 语义检索
+    - 持久化存储
+    """
+    
+    def __init__(self, persist_dir: str = "./chroma_db"):
         """
         初始化知识库
         
         Args:
-            kb_dir: 知识库存储目录
+            persist_dir: ChromaDB 持久化目录
         """
-        self.kb_dir = Path(kb_dir)
-        self.kb_dir.mkdir(exist_ok=True)
+        self.persist_dir = Path(persist_dir)
+        self.persist_dir.mkdir(parents=True, exist_ok=True)
         
-        # 存储目录
-        self.documents_dir = self.kb_dir / "documents"
-        self.documents_dir.mkdir(exist_ok=True)
+        self.vectorstore = None
+        self.embeddings = None
+        self.text_splitter = None
         
-        # FAISS 索引使用临时目录（避免中文路径问题）
-        import tempfile
-        self.vectors_dir = Path(tempfile.gettempdir()) / "health_kb_index"
-        self.vectors_dir.mkdir(exist_ok=True)
-        
-        self.index_file = self.vectors_dir / "faiss.index"
-        self.metadata_file = self.vectors_dir / "metadata.json"
-        
-        # 嵌入模型（使用中文优化的模型）
-        self.embedding_model = None
-        self.embedding_dim = 768  # m3e-base的维度
-        
-        # FAISS索引
-        self.index = None
-        self.metadata = []
-        
-        # 初始化
-        if HAS_DEPS:
-            self._init_model()
-            self._load_index()
+        if HAS_LANGCHAIN:
+            self._init_components()
         else:
-            logger.warning("知识库依赖未安装，将使用模拟模式。请运行: pip install faiss-cpu sentence-transformers numpy")
+            logger.warning("LangChain 未安装，知识库将使用模拟模式")
     
-    def _init_model(self):
-        """初始化嵌入模型（优先使用硅基流动API）"""
-        import os
-        
-        # 方法1: 使用硅基流动 API（推荐，效果更好）
-        siliconflow_key = os.getenv("SILICONFLOW_API_KEY", "")
-        if siliconflow_key:
+    def _init_components(self):
+        """初始化 LangChain 组件"""
+        try:
+            # 1. 初始化嵌入模型（优先使用硅基流动API，避免SSL问题）
+            self.embeddings = None
+            
+            # 方法1: 硅基流动 API（推荐）
             try:
                 from services.siliconflow_service import siliconflow_service
-                if siliconflow_service.is_available:
-                    self._use_siliconflow = True
-                    self._siliconflow = siliconflow_service
-                    self.embedding_dim = 1024  # BGE-M3 模型维度
-                    self.embedding_model = True
-                    logger.info("使用硅基流动 BGE-M3 嵌入模型 (API)")
-                    return
+                if siliconflow_service and siliconflow_service.is_available:
+                    self.embeddings = SiliconFlowEmbeddings()
+                    logger.info("✅ LangChain 使用硅基流动 BGE-M3 嵌入模型")
             except Exception as e:
-                logger.warning(f"硅基流动服务初始化失败: {e}")
-        
-        self._use_siliconflow = False
-        
-        # 方法2: 使用本地模型
-        try:
-            import torch
-            from transformers import AutoTokenizer, AutoModel
+                logger.warning(f"硅基流动初始化失败: {e}")
             
-            local_model_path = os.path.join(
-                os.path.dirname(os.path.dirname(__file__)),
-                "models", "damo", "nlp_corom_sentence-embedding_chinese-base"
+            # 方法2: 本地模型（回退）
+            if self.embeddings is None:
+                try:
+                    self.embeddings = HuggingFaceEmbeddings(
+                        model_name="moka-ai/m3e-base",
+                        model_kwargs={'device': 'cpu'},
+                        encode_kwargs={'normalize_embeddings': True}
+                    )
+                    logger.info("使用本地 m3e-base 嵌入模型")
+                except Exception as e:
+                    logger.warning(f"本地模型加载失败: {e}")
+            
+            # 2. 初始化文本分割器
+            self.text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=500,
+                chunk_overlap=50,
+                length_function=len,
+                separators=["\n\n", "\n", "。", "！", "？", "；", " ", ""]
             )
             
-            if os.path.exists(local_model_path):
-                logger.info(f"加载本地嵌入模型: {local_model_path}")
-                self._tokenizer = AutoTokenizer.from_pretrained(local_model_path)
-                self._transformer_model = AutoModel.from_pretrained(local_model_path)
-                self._transformer_model.eval()
-                self._use_transformers = True
-                self.embedding_dim = 768
-                self.embedding_model = True
-                logger.info(f"本地嵌入模型加载成功，维度: {self.embedding_dim}")
-                return
+            # 3. 初始化或加载向量存储
+            self._load_or_create_vectorstore()
             
-            # 回退：尝试 SentenceTransformer
-            logger.info("本地模型不存在，尝试 SentenceTransformer")
-            self._use_transformers = False
-            try:
-                import socket
-                socket.setdefaulttimeout(10)
-                self.embedding_model = SentenceTransformer("moka-ai/m3e-base")
-                self.embedding_dim = self.embedding_model.get_sentence_embedding_dimension()
-                logger.info(f"SentenceTransformer 加载成功，维度: {self.embedding_dim}")
-            except Exception as e:
-                logger.warning(f"SentenceTransformer 加载失败: {str(e)[:100]}")
-                self.embedding_model = None
-                
+            logger.info("LangChain 知识库初始化成功")
+            
         except Exception as e:
-            logger.warning(f"嵌入模型加载失败: {str(e)[:100]}")
-            self.embedding_model = None
-            self._use_transformers = False
+            logger.error(f"LangChain 组件初始化失败: {e}")
+            self.embeddings = None
     
-    def _load_index(self):
-        """加载FAISS索引"""
+    def _load_or_create_vectorstore(self):
+        """加载或创建向量存储"""
         try:
-            if self.index_file.exists() and self.metadata_file.exists():
-                # 加载索引
-                self.index = faiss.read_index(str(self.index_file))
-                
-                # 加载元数据
-                with open(self.metadata_file, 'r', encoding='utf-8') as f:
-                    self.metadata = json.load(f)
-                
-                logger.info(f"知识库索引加载成功，包含 {len(self.metadata)} 个文档块")
-            else:
-                # 创建新索引
-                self.index = None
-                self.metadata = []
-                logger.info("创建新的知识库索引")
-        except Exception as e:
-            logger.error(f"加载索引失败: {str(e)}")
-            self.index = None
-            self.metadata = []
-    
-    def _save_index(self):
-        """保存FAISS索引"""
-        try:
-            if self.index is not None:
-                faiss.write_index(self.index, str(self.index_file))
-            
-            with open(self.metadata_file, 'w', encoding='utf-8') as f:
-                json.dump(self.metadata, f, ensure_ascii=False, indent=2)
-            
-            logger.info("知识库索引保存成功")
-        except Exception as e:
-            logger.error(f"保存索引失败: {str(e)}")
-    
-    def _get_embedding(self, text: str) -> np.ndarray:
-        """
-        获取文本的向量嵌入
-        
-        Args:
-            text: 输入文本
-        
-        Returns:
-            向量嵌入
-        """
-        if self.embedding_model is None:
-            # 模拟嵌入（返回随机向量）
-            return np.random.rand(self.embedding_dim).astype('float32')
-        
-        try:
-            # 方法1: 使用硅基流动 API
-            if getattr(self, '_use_siliconflow', False):
-                embedding = self._siliconflow.get_embedding(text, model="bge-m3")
-                embedding = np.array(embedding)
-                # 归一化
-                embedding = embedding / np.linalg.norm(embedding)
-                return embedding.astype('float32')
-            
-            # 方法2: 使用 transformers 本地模型
-            if getattr(self, '_use_transformers', False):
-                import torch
-                inputs = self._tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
-                with torch.no_grad():
-                    outputs = self._transformer_model(**inputs)
-                # 使用 [CLS] token 的输出作为句子嵌入
-                embedding = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
-                # 归一化
-                embedding = embedding / np.linalg.norm(embedding)
-                return embedding.astype('float32')
-            
-            # 方法3: 使用 SentenceTransformer
-            embedding = self.embedding_model.encode(text, normalize_embeddings=True)
-            return embedding.astype('float32')
-        except Exception as e:
-            logger.error(f"生成嵌入失败: {str(e)}")
-            return np.random.rand(self.embedding_dim).astype('float32')
-    
-    def _chunk_text(self, text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]:
-        """
-        将文本分块
-        
-        Args:
-            text: 输入文本
-            chunk_size: 每块字符数
-            overlap: 重叠字符数
-        
-        Returns:
-            文本块列表
-        """
-        chunks = []
-        start = 0
-        
-        while start < len(text):
-            end = start + chunk_size
-            chunk = text[start:end]
-            
-            # 尝试在句号、问号、感叹号处分割
-            if end < len(text):
-                last_punct = max(
-                    chunk.rfind('。'),
-                    chunk.rfind('！'),
-                    chunk.rfind('？'),
-                    chunk.rfind('\n')
+            # 尝试加载现有的向量存储
+            if (self.persist_dir / "chroma.sqlite3").exists():
+                self.vectorstore = Chroma(
+                    persist_directory=str(self.persist_dir),
+                    embedding_function=self.embeddings
                 )
-                if last_punct > chunk_size // 2:
-                    chunk = chunk[:last_punct + 1]
-                    end = start + last_punct + 1
-            
-            if chunk.strip():
-                chunks.append(chunk.strip())
-            
-            start = end - overlap
-        
-        return chunks
+                count = self.vectorstore._collection.count()
+                logger.info(f"加载现有向量存储，包含 {count} 个文档块")
+            else:
+                # 创建新的向量存储
+                self.vectorstore = Chroma(
+                    persist_directory=str(self.persist_dir),
+                    embedding_function=self.embeddings
+                )
+                logger.info("创建新的向量存储")
+        except Exception as e:
+            logger.error(f"向量存储初始化失败: {e}")
+            self.vectorstore = None
     
-    def add_document(self, title: str, content: str, doc_type: str = "text", 
-                    source: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None) -> str:
+    def add_document(
+        self, 
+        title: str, 
+        content: str, 
+        doc_type: str = "text",
+        source: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> str:
         """
         添加文档到知识库
         
@@ -256,130 +171,133 @@ class KnowledgeBase:
             doc_type: 文档类型
             source: 文档来源
             metadata: 额外元数据
-        
+            
         Returns:
             文档ID
         """
-        if not HAS_DEPS:
-            logger.warning("知识库依赖未安装，无法添加文档")
+        if not HAS_LANGCHAIN or self.vectorstore is None:
+            logger.warning("知识库未初始化")
             return ""
         
         try:
+            import hashlib
+            from datetime import datetime
+            
             # 生成文档ID
             doc_id = hashlib.md5(f"{title}_{content[:100]}".encode()).hexdigest()
             
-            # 文本分块
-            chunks = self._chunk_text(content)
+            # 分割文档
+            chunks = self.text_splitter.split_text(content)
             
             if not chunks:
-                logger.warning(f"文档 {title} 内容为空，跳过")
+                logger.warning(f"文档 {title} 内容为空")
                 return doc_id
             
-            # 生成向量
-            embeddings = []
-            new_metadata = []
-            
+            # 创建 LangChain Document 对象
+            documents = []
             for i, chunk in enumerate(chunks):
-                embedding = self._get_embedding(chunk)
-                embeddings.append(embedding)
-                
-                chunk_metadata = {
+                doc_metadata = {
                     "doc_id": doc_id,
                     "chunk_index": i,
                     "title": title,
-                    "content": chunk,
                     "doc_type": doc_type,
                     "source": source or "",
                     "added_at": datetime.now().isoformat(),
                     **(metadata or {})
                 }
-                new_metadata.append(chunk_metadata)
+                documents.append(Document(page_content=chunk, metadata=doc_metadata))
             
-            # 转换为numpy数组
-            embeddings_array = np.vstack(embeddings).astype('float32')
-            
-            # 创建或更新FAISS索引
-            if self.index is None:
-                # 创建新索引
-                self.index = faiss.IndexFlatIP(self.embedding_dim)  # 使用内积（余弦相似度）
-            
-            # 添加到索引
-            self.index.add(embeddings_array)
-            
-            # 添加元数据
-            self.metadata.extend(new_metadata)
-            
-            # 保存索引
-            self._save_index()
-            
-            # 保存原始文档
-            doc_file = self.documents_dir / f"{doc_id}.json"
-            with open(doc_file, 'w', encoding='utf-8') as f:
-                json.dump({
-                    "doc_id": doc_id,
-                    "title": title,
-                    "content": content,
-                    "doc_type": doc_type,
-                    "source": source,
-                    "chunks_count": len(chunks),
-                    "added_at": datetime.now().isoformat(),
-                    "metadata": metadata or {}
-                }, f, ensure_ascii=False, indent=2)
+            # 添加到向量存储
+            self.vectorstore.add_documents(documents)
             
             logger.info(f"文档添加成功: {title} (ID: {doc_id}, {len(chunks)} 个块)")
             return doc_id
             
         except Exception as e:
-            logger.error(f"添加文档失败: {str(e)}")
+            logger.error(f"添加文档失败: {e}")
             return ""
     
-    def search(self, query: str, top_k: int = 5, elderly_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def search(
+        self, 
+        query: str, 
+        top_k: int = 5,
+        filter_dict: Optional[Dict[str, Any]] = None,
+        score_threshold: float = 0.5
+    ) -> List[Dict[str, Any]]:
         """
         搜索知识库
         
         Args:
             query: 查询文本
-            top_k: 返回最相关的K个结果
-            elderly_id: 老人ID（可选，用于过滤文档）
-        
+            top_k: 返回结果数量
+            filter_dict: 过滤条件
+            score_threshold: 相似度阈值
+            
         Returns:
             搜索结果列表
         """
-        if not HAS_DEPS or self.index is None or len(self.metadata) == 0:
-            logger.warning("知识库未初始化或为空")
+        if not HAS_LANGCHAIN or self.vectorstore is None:
+            logger.warning("知识库未初始化")
             return []
         
         try:
-            # 生成查询向量
-            query_embedding = self._get_embedding(query).reshape(1, -1)
+            # 使用相似度搜索
+            results = self.vectorstore.similarity_search_with_score(
+                query,
+                k=top_k,
+                filter=filter_dict
+            )
             
-            # 搜索（获取更多结果以进行过滤）
-            search_k = top_k * 3 if elderly_id else top_k
-            scores, indices = self.index.search(query_embedding, min(search_k, len(self.metadata)))
+            # 格式化结果
+            formatted_results = []
+            for doc, score in results:
+                # ChromaDB 返回的是距离，需要转换为相似度
+                similarity = 1 - score if score <= 1 else 1 / (1 + score)
+                
+                if similarity >= score_threshold:
+                    formatted_results.append({
+                        "content": doc.page_content,
+                        "title": doc.metadata.get("title", ""),
+                        "doc_id": doc.metadata.get("doc_id", ""),
+                        "chunk_index": doc.metadata.get("chunk_index", 0),
+                        "doc_type": doc.metadata.get("doc_type", ""),
+                        "source": doc.metadata.get("source", ""),
+                        "similarity_score": similarity,
+                        "metadata": doc.metadata
+                    })
             
-            # 组装结果
-            results = []
-            for score, idx in zip(scores[0], indices[0]):
-                if idx < len(self.metadata):
-                    result = self.metadata[idx].copy()
-                    
-                    # 如果指定了elderly_id，进行过滤
-                    if elderly_id and result.get("metadata", {}).get("elderly_id"):
-                        if str(result["metadata"]["elderly_id"]) != str(elderly_id):
-                            continue
-                    
-                    result["similarity_score"] = float(score)
-                    results.append(result)
-                    
-                    # 如果已经获取足够的 filtered 结果，停止
-                    if len(results) >= top_k:
-                        break
-            
-            return results
+            return formatted_results
             
         except Exception as e:
-            logger.error(f"搜索失败: {str(e)}")
+            logger.error(f"搜索失败: {e}")
             return []
+    
+    def search_with_context(
+        self, 
+        query: str, 
+        top_k: int = 3
+    ) -> str:
+        """
+        搜索并返回格式化的上下文（用于RAG）
+        
+        Args:
+            query: 查询文本
+            top_k: 返回结果数量
+            
+        Returns:
+            格式化的上下文字符串
+        """
+        results = self.search(query, top_k=top_k)
+        
+        if not results:
+            return ""
+        
+        context_parts = ["【相关知识库内容】"]
+        for i, result in enumerate(results, 1):
+            context_parts.append(f"\n{i}. 【{result['title']}】")
+            context_parts.append(result['content'])
+        
+        return "\n".join(context_parts)
     
     def delete_document(self, doc_id: str) -> bool:
         """
@@ -387,97 +305,64 @@ class KnowledgeBase:
         
         Args:
             doc_id: 文档ID
-        
+            
         Returns:
             是否删除成功
         """
+        if not HAS_LANGCHAIN or self.vectorstore is None:
+            return False
+        
         try:
-            # 找到所有相关块
-            indices_to_remove = [
-                i for i, meta in enumerate(self.metadata)
-                if meta.get("doc_id") == doc_id
-            ]
-            
-            if not indices_to_remove:
-                logger.warning(f"未找到文档: {doc_id}")
-                return False
-            
-            # 重建索引（移除相关块）
-            # 注意：FAISS不支持直接删除，需要重建
-            remaining_metadata = [
-                meta for i, meta in enumerate(self.metadata)
-                if i not in indices_to_remove
-            ]
-            
-            if remaining_metadata:
-                # 重新生成向量并重建索引
-                embeddings = []
-                for meta in remaining_metadata:
-                    embedding = self._get_embedding(meta["content"])
-                    embeddings.append(embedding)
-                
-                embeddings_array = np.vstack(embeddings).astype('float32')
-                self.index = faiss.IndexFlatIP(self.embedding_dim)
-                self.index.add(embeddings_array)
-            else:
-                self.index = None
-            
-            self.metadata = remaining_metadata
-            self._save_index()
-            
-            # 删除文档文件
-            doc_file = self.documents_dir / f"{doc_id}.json"
-            if doc_file.exists():
-                doc_file.unlink()
-            
+            # ChromaDB 支持按条件删除
+            self.vectorstore._collection.delete(
+                where={"doc_id": doc_id}
+            )
             logger.info(f"文档删除成功: {doc_id}")
             return True
-            
         except Exception as e:
-            logger.error(f"删除文档失败: {str(e)}")
+            logger.error(f"删除文档失败: {e}")
             return False
-    
-    def get_document_info(self, doc_id: str) -> Optional[Dict[str, Any]]:
-        """获取文档信息"""
-        doc_file = self.documents_dir / f"{doc_id}.json"
-        if doc_file.exists():
-            with open(doc_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return None
     
     def list_documents(self) -> List[Dict[str, Any]]:
         """列出所有文档"""
-        docs = []
-        for doc_file in self.documents_dir.glob("*.json"):
-            try:
-                with open(doc_file, 'r', encoding='utf-8') as f:
-                    doc = json.load(f)
-                    docs.append({
-                        "doc_id": doc.get("doc_id"),
-                        "title": doc.get("title"),
-                        "doc_type": doc.get("doc_type"),
-                        "source": doc.get("source"),
-                        "chunks_count": doc.get("chunks_count", 0),
-                        "added_at": doc.get("added_at")
-                    })
-            except Exception as e:
-                logger.error(f"读取文档失败 {doc_file}: {str(e)}")
+        if not HAS_LANGCHAIN or self.vectorstore is None:
+            return []
         
-        return docs
-
-
-    def import_from_directory(self, source_dir: str = None) -> int:
+        try:
+            # 获取所有文档的元数据
+            collection = self.vectorstore._collection
+            results = collection.get()
+            
+            # 按 doc_id 去重
+            docs_map = {}
+            for metadata in results.get("metadatas", []):
+                doc_id = metadata.get("doc_id")
+                if doc_id and doc_id not in docs_map:
+                    docs_map[doc_id] = {
+                        "doc_id": doc_id,
+                        "title": metadata.get("title", ""),
+                        "doc_type": metadata.get("doc_type", ""),
+                        "source": metadata.get("source", ""),
+                        "added_at": metadata.get("added_at", "")
+                    }
+            
+            return list(docs_map.values())
+        except Exception as e:
+            logger.error(f"列出文档失败: {e}")
+            return []
+    
+    def import_from_directory(self, source_dir: str) -> int:
         """
-        从目录导入所有文档（支持 .txt 和 .docx）
+        从目录导入文档
         
         Args:
-            source_dir: 源文档目录，默认为知识库根目录
+            source_dir: 源目录
             
         Returns:
-            成功导入的文档数量
+            导入的文档数量
         """
-        if source_dir is None:
-            source_dir = self.kb_dir
+        if not HAS_LANGCHAIN:
+            return 0
         
         source_path = Path(source_dir)
         if not source_path.exists():
@@ -485,15 +370,12 @@ class KnowledgeBase:
             return 0
         
         imported = 0
-        
-        # 获取已导入的文档标题
         existing_titles = {doc.get("title") for doc in self.list_documents()}
         
         # 导入 .txt 文件
         for txt_file in source_path.glob("*.txt"):
             title = txt_file.stem
             if title in existing_titles:
-                logger.debug(f"文档已存在，跳过: {title}")
                 continue
             
             try:
@@ -514,18 +396,12 @@ class KnowledgeBase:
         for docx_file in source_path.glob("*.docx"):
             title = docx_file.stem
             if title in existing_titles:
-                logger.debug(f"文档已存在，跳过: {title}")
                 continue
             
             try:
-                # 尝试读取 docx
-                try:
-                    from docx import Document
-                    doc = Document(str(docx_file))
-                    content = "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
-                except ImportError:
-                    logger.warning(f"python-docx 未安装，跳过 {docx_file}")
-                    continue
+                from docx import Document as DocxDocument
+                doc = DocxDocument(str(docx_file))
+                content = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
                 
                 if content.strip():
                     self.add_document(
@@ -543,35 +419,51 @@ class KnowledgeBase:
         return imported
     
     def _guess_category(self, title: str) -> str:
-        """根据标题猜测文档分类"""
+        """根据标题猜测分类"""
         title_lower = title.lower()
         if any(k in title_lower for k in ["血压", "高血压"]):
             return "高血压"
         elif any(k in title_lower for k in ["血糖", "糖尿病"]):
             return "糖尿病"
-        elif any(k in title_lower for k in ["血脂", "胆固醇", "心肌梗死", "脑血栓"]):
+        elif any(k in title_lower for k in ["血脂", "胆固醇"]):
             return "心血管"
         elif any(k in title_lower for k in ["运动", "活动"]):
             return "运动指导"
-        elif any(k in title_lower for k in ["膳食", "饮食", "营养"]):
+        elif any(k in title_lower for k in ["膳食", "饮食"]):
             return "饮食营养"
-        elif any(k in title_lower for k in ["骨质", "骨骼"]):
-            return "骨骼健康"
-        elif any(k in title_lower for k in ["体重", "肥胖"]):
-            return "体重管理"
         else:
             return "综合健康"
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """获取知识库统计信息"""
+        if not HAS_LANGCHAIN or self.vectorstore is None:
+            return {"status": "未初始化", "documents": 0, "chunks": 0}
+        
+        try:
+            collection = self.vectorstore._collection
+            count = collection.count()
+            docs = self.list_documents()
+            
+            return {
+                "status": "正常",
+                "documents": len(docs),
+                "chunks": count,
+                "persist_dir": str(self.persist_dir),
+                "embedding_model": "BGE-M3" if isinstance(self.embeddings, SiliconFlowEmbeddings) else "m3e-base"
+            }
+        except Exception as e:
+            return {"status": f"错误: {e}", "documents": 0, "chunks": 0}
 
 
-# 创建全局知识库实例（使用项目根目录的 knowledge-base 文件夹）
-import os
+# 创建全局实例
 _project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+_chroma_path = os.path.join(_project_root, "chroma_db")
 _kb_path = os.path.join(_project_root, "knowledge-base")
-knowledge_base = KnowledgeBase(kb_dir=_kb_path)
 
-# 自动导入知识库目录下的文档
-if HAS_DEPS and knowledge_base.embedding_model:
-    _imported = knowledge_base.import_from_directory()
+langchain_knowledge_base = LangChainKnowledgeBase(persist_dir=_chroma_path)
+
+# 自动导入知识库文档
+if HAS_LANGCHAIN and langchain_knowledge_base.vectorstore:
+    _imported = langchain_knowledge_base.import_from_directory(_kb_path)
     if _imported > 0:
-        logger.info(f"知识库初始化完成，共导入 {_imported} 个新文档")
-
+        logger.info(f"LangChain 知识库初始化完成，导入 {_imported} 个新文档")

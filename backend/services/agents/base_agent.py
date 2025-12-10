@@ -413,7 +413,7 @@ class BaseAgent(ABC):
     
     def _retrieve_rag_context(self, user_input: str, elderly_id: str = None) -> str:
         """
-        从RAG知识库检索相关内容（优先使用LangChain版本）
+        从 LangChain RAG 知识库检索相关内容
         
         Args:
             user_input: 用户输入
@@ -422,62 +422,18 @@ class BaseAgent(ABC):
         Returns:
             RAG上下文字符串，如果无结果返回空字符串
         """
-        # 优先尝试 LangChain 知识库
         try:
-            from services.knowledge_base_langchain import langchain_knowledge_base
+            from services.knowledge_base import langchain_knowledge_base
             
             if langchain_knowledge_base and langchain_knowledge_base.vectorstore:
                 context = langchain_knowledge_base.search_with_context(user_input, top_k=3)
                 if context:
-                    logger.debug(f"[{self.name}] 使用 LangChain RAG")
+                    logger.debug(f"[{self.name}] LangChain RAG 检索成功")
                     return context
-        except Exception as e:
-            logger.debug(f"[{self.name}] LangChain RAG 失败，回退到原版: {e}")
-        
-        # 回退到原版知识库
-        try:
-            from services.knowledge_base import knowledge_base
             
-            if knowledge_base is None:
-                return ""
-            
-            # 检索相关知识
-            search_results = knowledge_base.search(
-                query=user_input,
-                top_k=3,
-                elderly_id=elderly_id
-            )
-            
-            if not search_results:
-                return ""
-            
-            # 构建RAG上下文
-            rag_parts = ["【RAG知识库参考】"]
-            rag_parts.append("以下是从医学知识库中检索到的相关内容，请参考回答：")
-            rag_parts.append("")
-            
-            for i, result in enumerate(search_results, 1):
-                content = result.get('content', '')[:400]  # 限制长度
-                title = result.get('title', f'知识{i}')
-                category = result.get('category', '')
-                score = result.get('score', 0)
-                
-                rag_parts.append(f"📚 {i}. 【{category}】{title}")
-                rag_parts.append(f"   {content}")
-                rag_parts.append(f"   (相关度: {score:.2f})")
-                rag_parts.append("")
-            
-            rag_parts.append("请基于以上知识库内容，结合你的专业知识回答用户问题。")
-            rag_parts.append("如果知识库内容与问题不相关，可以忽略。")
-            
-            logger.info(f"[{self.name}] RAG检索到 {len(search_results)} 条相关知识")
-            return "\n".join(rag_parts)
-            
-        except ImportError:
-            logger.debug(f"[{self.name}] 知识库模块未加载，跳过RAG")
             return ""
         except Exception as e:
-            logger.warning(f"[{self.name}] RAG检索失败: {e}")
+            logger.warning(f"[{self.name}] LangChain RAG 检索失败: {e}")
             return ""
     
     def get_system_prompt(self) -> str:
