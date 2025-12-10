@@ -314,6 +314,68 @@ async def get_consultation_history(
         )
 
 
+class PublicConsultRequest(BaseModel):
+    """公开AI咨询请求（无需认证）"""
+    user_input: str = Field(..., description="用户输入的问题", min_length=1, max_length=2000)
+    user_role: str = Field(default="elderly", description="用户角色: elderly/children/community")
+
+
+@router.post("/consult/public")
+async def ai_consult_public(request: PublicConsultRequest):
+    """
+    公开AI健康咨询接口（无需认证）
+    
+    用于前端快速测试多智能体系统
+    """
+    print(f"[DEBUG AI Public] 收到公开咨询请求，角色: {request.user_role}")
+    
+    try:
+        if not request.user_input or not request.user_input.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="用户输入不能为空"
+            )
+        
+        # 调用AI服务
+        try:
+            ai_response = await ai_service.consult(
+                user_input=request.user_input,
+                user_role=request.user_role,
+                elderly_id=None,
+                health_data=None,
+                conversation_history=[],
+                use_knowledge_base=True,
+                use_multi_agent=True
+            )
+        except Exception as e:
+            logger.error(f"AI服务调用失败: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"AI服务暂时不可用: {str(e)}"
+            )
+        
+        return {
+            "status": "success",
+            "data": {
+                "query": request.user_input,
+                "response": ai_response,
+                "user_role": request.user_role,
+                "health_data_used": False,
+                "knowledge_base_used": True
+            },
+            "message": "咨询成功"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"公开AI咨询接口错误: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI服务处理失败: {str(e)}"
+        )
+
+
 @router.get("/agents")
 async def get_agents_info():
     """

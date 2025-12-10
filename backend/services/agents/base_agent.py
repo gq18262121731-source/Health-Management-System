@@ -160,16 +160,20 @@ class BaseAgent(ABC):
         user_input: str,
         system_prompt: str = None,
         history: List[Dict[str, str]] = None,
-        user_role: str = "elderly"
+        user_role: str = "elderly",
+        elderly_id: str = None,
+        use_rag: bool = True
     ) -> str:
         """
-        调用讯飞星火大模型
+        调用讯飞星火大模型（集成RAG知识库检索）
         
         Args:
             user_input: 用户输入
             system_prompt: 系统提示词（智能体专业prompt）
             history: 对话历史
             user_role: 用户角色 (elderly/children/community)
+            elderly_id: 老人ID（用于个性化RAG检索）
+            use_rag: 是否使用RAG知识库增强
             
         Returns:
             大模型回复
@@ -181,6 +185,13 @@ class BaseAgent(ABC):
             if system_prompt is None:
                 system_prompt = self.get_role_adapted_prompt(user_role)
             
+            # ========== RAG 知识库检索增强 ==========
+            if use_rag:
+                rag_context = self._retrieve_rag_context(user_input, elderly_id)
+                if rag_context:
+                    system_prompt = f"{system_prompt}\n\n{rag_context}"
+                    logger.info(f"[{self.name}] RAG知识库已注入")
+            
             response = spark_service.chat(
                 user_input=user_input,
                 system_prompt=system_prompt,
@@ -189,12 +200,68 @@ class BaseAgent(ABC):
                 max_tokens=2048
             )
             
-            logger.info(f"[{self.name}] LLM调用成功(角色:{user_role})，回复长度: {len(response)}")
+            logger.info(f"[{self.name}] LLM调用成功(角色:{user_role}, RAG:{use_rag})，回复长度: {len(response)}")
             return response
             
         except Exception as e:
             logger.error(f"[{self.name}] LLM调用失败: {e}")
             return self.get_fallback_response(user_input)
+    
+    def _retrieve_rag_context(self, user_input: str, elderly_id: str = None) -> str:
+        """
+        从RAG知识库检索相关内容
+        
+        Args:
+            user_input: 用户输入
+            elderly_id: 老人ID（可选，用于个性化检索）
+            
+        Returns:
+            RAG上下文字符串，如果无结果返回空字符串
+        """
+        try:
+            from services.knowledge_base import knowledge_base
+            
+            if knowledge_base is None:
+                return ""
+            
+            # 检索相关知识
+            search_results = knowledge_base.search(
+                query=user_input,
+                top_k=3,
+                elderly_id=elderly_id
+            )
+            
+            if not search_results:
+                return ""
+            
+            # 构建RAG上下文
+            rag_parts = ["【RAG知识库参考】"]
+            rag_parts.append("以下是从医学知识库中检索到的相关内容，请参考回答：")
+            rag_parts.append("")
+            
+            for i, result in enumerate(search_results, 1):
+                content = result.get('content', '')[:400]  # 限制长度
+                title = result.get('title', f'知识{i}')
+                category = result.get('category', '')
+                score = result.get('score', 0)
+                
+                rag_parts.append(f"📚 {i}. 【{category}】{title}")
+                rag_parts.append(f"   {content}")
+                rag_parts.append(f"   (相关度: {score:.2f})")
+                rag_parts.append("")
+            
+            rag_parts.append("请基于以上知识库内容，结合你的专业知识回答用户问题。")
+            rag_parts.append("如果知识库内容与问题不相关，可以忽略。")
+            
+            logger.info(f"[{self.name}] RAG检索到 {len(search_results)} 条相关知识")
+            return "\n".join(rag_parts)
+            
+        except ImportError:
+            logger.debug(f"[{self.name}] 知识库模块未加载，跳过RAG")
+            return ""
+        except Exception as e:
+            logger.warning(f"[{self.name}] RAG检索失败: {e}")
+            return ""
     
     def get_system_prompt(self) -> str:
         """获取智能体专业系统提示词（子类重写）"""

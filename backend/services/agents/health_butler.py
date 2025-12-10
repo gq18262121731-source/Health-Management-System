@@ -80,7 +80,7 @@ class HealthButlerAgent(BaseAgent):
 - 重要提醒用【】标注"""
     
     def process(self, message: AgentMessage, memory: AgentMemory, user_role: str = "elderly") -> AgentMessage:
-        """处理消息 - 调用讯飞星火（支持角色适配）"""
+        """处理消息 - 调用讯飞星火（支持角色适配 + RAG增强）"""
         text = message.content.strip()
         
         # 构建对话历史
@@ -89,11 +89,16 @@ class HealthButlerAgent(BaseAgent):
             role = "user" if msg.type == MessageType.USER_INPUT else "assistant"
             history.append({"role": role, "content": msg.content})
         
-        # 调用大模型（传递用户角色以适配回复风格）
+        # 获取elderly_id用于RAG个性化检索
+        elderly_id = memory.context.get("elderly_id") or memory.user_id
+        
+        # 调用大模型（传递用户角色以适配回复风格 + RAG增强）
         response_text = self.call_llm(
             user_input=text,
             history=history,
-            user_role=user_role
+            user_role=user_role,
+            elderly_id=elderly_id,
+            use_rag=True
         )
         
         return AgentMessage(

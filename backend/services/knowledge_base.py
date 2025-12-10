@@ -2,10 +2,22 @@
 import logging
 import os
 import json
+import ssl
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 import hashlib
 from datetime import datetime
+
+# 解决 SSL 证书验证问题
+os.environ['CURL_CA_BUNDLE'] = ''
+os.environ['REQUESTS_CA_BUNDLE'] = ''
+os.environ['HF_HUB_DISABLE_SSL_VERIFICATION'] = '1'
+
+try:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+except ImportError:
+    pass
 
 try:
     import numpy as np
@@ -32,11 +44,13 @@ class KnowledgeBase:
         self.kb_dir.mkdir(exist_ok=True)
         
         # 存储目录
-        self.vectors_dir = self.kb_dir / "vectors"
-        self.vectors_dir.mkdir(exist_ok=True)
-        
         self.documents_dir = self.kb_dir / "documents"
         self.documents_dir.mkdir(exist_ok=True)
+        
+        # FAISS 索引使用临时目录（避免中文路径问题）
+        import tempfile
+        self.vectors_dir = Path(tempfile.gettempdir()) / "health_kb_index"
+        self.vectors_dir.mkdir(exist_ok=True)
         
         self.index_file = self.vectors_dir / "faiss.index"
         self.metadata_file = self.vectors_dir / "metadata.json"
@@ -59,18 +73,44 @@ class KnowledgeBase:
     def _init_model(self):
         """初始化嵌入模型"""
         try:
-            # 使用m3e-base模型（中文优化）
-            # 如果下载失败，可以手动下载或使用其他模型
-            model_name = "moka-ai/m3e-base"
-            logger.info(f"正在加载嵌入模型: {model_name}")
+            import os
+            import torch
+            from transformers import AutoTokenizer, AutoModel
             
-            self.embedding_model = SentenceTransformer(model_name)
-            self.embedding_dim = self.embedding_model.get_sentence_embedding_dimension()
-            logger.info(f"嵌入模型加载成功，维度: {self.embedding_dim}")
+            # 本地模型路径（从 ModelScope 下载）
+            local_model_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "models", "damo", "nlp_corom_sentence-embedding_chinese-base"
+            )
+            
+            if os.path.exists(local_model_path):
+                logger.info(f"加载本地嵌入模型: {local_model_path}")
+                self._tokenizer = AutoTokenizer.from_pretrained(local_model_path)
+                self._transformer_model = AutoModel.from_pretrained(local_model_path)
+                self._transformer_model.eval()
+                self._use_transformers = True
+                self.embedding_dim = 768
+                self.embedding_model = True  # 标记为已加载
+                logger.info(f"本地嵌入模型加载成功，维度: {self.embedding_dim}")
+                return
+            
+            # 回退：尝试 SentenceTransformer
+            logger.info("本地模型不存在，尝试 SentenceTransformer")
+            self._use_transformers = False
+            try:
+                import socket
+                socket.setdefaulttimeout(10)
+                self.embedding_model = SentenceTransformer("moka-ai/m3e-base")
+                self.embedding_dim = self.embedding_model.get_sentence_embedding_dimension()
+                logger.info(f"SentenceTransformer 加载成功，维度: {self.embedding_dim}")
+            except Exception as e:
+                logger.warning(f"SentenceTransformer 加载失败: {str(e)[:100]}")
+                self.embedding_model = None
+                
         except Exception as e:
-            logger.error(f"嵌入模型加载失败: {str(e)}")
-            logger.info("将使用模拟嵌入模式")
+            logger.warning(f"嵌入模型加载失败: {str(e)[:100]}")
             self.embedding_model = None
+            self._use_transformers = False
     
     def _load_index(self):
         """加载FAISS索引"""
@@ -122,6 +162,19 @@ class KnowledgeBase:
             return np.random.rand(self.embedding_dim).astype('float32')
         
         try:
+            # 使用 transformers 本地模型
+            if getattr(self, '_use_transformers', False):
+                import torch
+                inputs = self._tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
+                with torch.no_grad():
+                    outputs = self._transformer_model(**inputs)
+                # 使用 [CLS] token 的输出作为句子嵌入
+                embedding = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
+                # 归一化
+                embedding = embedding / np.linalg.norm(embedding)
+                return embedding.astype('float32')
+            
+            # 使用 SentenceTransformer
             embedding = self.embedding_model.encode(text, normalize_embeddings=True)
             return embedding.astype('float32')
         except Exception as e:
@@ -387,6 +440,112 @@ class KnowledgeBase:
         return docs
 
 
-# 创建全局知识库实例
-knowledge_base = KnowledgeBase()
+    def import_from_directory(self, source_dir: str = None) -> int:
+        """
+        从目录导入所有文档（支持 .txt 和 .docx）
+        
+        Args:
+            source_dir: 源文档目录，默认为知识库根目录
+            
+        Returns:
+            成功导入的文档数量
+        """
+        if source_dir is None:
+            source_dir = self.kb_dir
+        
+        source_path = Path(source_dir)
+        if not source_path.exists():
+            logger.warning(f"目录不存在: {source_dir}")
+            return 0
+        
+        imported = 0
+        
+        # 获取已导入的文档标题
+        existing_titles = {doc.get("title") for doc in self.list_documents()}
+        
+        # 导入 .txt 文件
+        for txt_file in source_path.glob("*.txt"):
+            title = txt_file.stem
+            if title in existing_titles:
+                logger.debug(f"文档已存在，跳过: {title}")
+                continue
+            
+            try:
+                content = txt_file.read_text(encoding='utf-8')
+                if content.strip():
+                    self.add_document(
+                        title=title,
+                        content=content,
+                        doc_type="text",
+                        source=str(txt_file),
+                        metadata={"category": self._guess_category(title)}
+                    )
+                    imported += 1
+            except Exception as e:
+                logger.error(f"导入 {txt_file} 失败: {e}")
+        
+        # 导入 .docx 文件
+        for docx_file in source_path.glob("*.docx"):
+            title = docx_file.stem
+            if title in existing_titles:
+                logger.debug(f"文档已存在，跳过: {title}")
+                continue
+            
+            try:
+                # 尝试读取 docx
+                try:
+                    from docx import Document
+                    doc = Document(str(docx_file))
+                    content = "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
+                except ImportError:
+                    logger.warning(f"python-docx 未安装，跳过 {docx_file}")
+                    continue
+                
+                if content.strip():
+                    self.add_document(
+                        title=title,
+                        content=content,
+                        doc_type="docx",
+                        source=str(docx_file),
+                        metadata={"category": self._guess_category(title)}
+                    )
+                    imported += 1
+            except Exception as e:
+                logger.error(f"导入 {docx_file} 失败: {e}")
+        
+        logger.info(f"从 {source_dir} 导入了 {imported} 个文档")
+        return imported
+    
+    def _guess_category(self, title: str) -> str:
+        """根据标题猜测文档分类"""
+        title_lower = title.lower()
+        if any(k in title_lower for k in ["血压", "高血压"]):
+            return "高血压"
+        elif any(k in title_lower for k in ["血糖", "糖尿病"]):
+            return "糖尿病"
+        elif any(k in title_lower for k in ["血脂", "胆固醇", "心肌梗死", "脑血栓"]):
+            return "心血管"
+        elif any(k in title_lower for k in ["运动", "活动"]):
+            return "运动指导"
+        elif any(k in title_lower for k in ["膳食", "饮食", "营养"]):
+            return "饮食营养"
+        elif any(k in title_lower for k in ["骨质", "骨骼"]):
+            return "骨骼健康"
+        elif any(k in title_lower for k in ["体重", "肥胖"]):
+            return "体重管理"
+        else:
+            return "综合健康"
+
+
+# 创建全局知识库实例（使用项目根目录的 knowledge-base 文件夹）
+import os
+_project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+_kb_path = os.path.join(_project_root, "knowledge-base")
+knowledge_base = KnowledgeBase(kb_dir=_kb_path)
+
+# 自动导入知识库目录下的文档
+if HAS_DEPS and knowledge_base.embedding_model:
+    _imported = knowledge_base.import_from_directory()
+    if _imported > 0:
+        logger.info(f"知识库初始化完成，共导入 {_imported} 个新文档")
 

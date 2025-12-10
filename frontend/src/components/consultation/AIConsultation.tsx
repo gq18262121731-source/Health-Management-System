@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Bot, Send, Mic, MicOff, Volume2, VolumeX, StopCircle, AlertCircle, History, BookOpen, TrendingUp, Lightbulb, Clock, Star, Loader2, Radio } from 'lucide-react';
+import { Bot, Send, Mic, MicOff, Volume2, VolumeX, StopCircle, AlertCircle, History, BookOpen, TrendingUp, Lightbulb, Clock, Star, Loader2, Radio, Cpu, Sparkles } from 'lucide-react';
 import { sendToSpark, ChatMessage } from '../../services/sparkApi';
+import { consultMultiAgentStream } from '../../services/multiAgentApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -82,6 +83,7 @@ export const AIConsultation = forwardRef<any, AIConsultationProps>(({ isFloating
   const [autoVoiceMode, setAutoVoiceMode] = useState(true); // 自动语音交互模式（默认开启）
   const [autoSpeakEnabled, setAutoSpeakEnabled] = useState(true); // AI回复自动朗读
   const [voiceInitialized, setVoiceInitialized] = useState(false); // 语音是否已初始化
+  const [useMultiAgent, setUseMultiAgent] = useState(true); // 使用后端多智能体系统（默认开启）
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const cancelRequestRef = useRef<(() => void) | null>(null);
@@ -159,6 +161,50 @@ export const AIConsultation = forwardRef<any, AIConsultationProps>(({ isFloating
     };
     setMessages(prev => [...prev, aiMessage]);
 
+    // 根据模式选择 API
+    if (useMultiAgent) {
+      // 使用后端多智能体系统
+      console.log('🤖 使用后端多智能体系统');
+      cancelRequestRef.current = consultMultiAgentStream(
+        content,
+        // onMessage - 流式更新
+        (text) => {
+          setMessages(prev => prev.map(m => 
+            m.id === aiMessageId ? { ...m, content: text } : m
+          ));
+          lastAiResponseRef.current = text;
+        },
+        // onComplete
+        async () => {
+          setIsLoading(false);
+          cancelRequestRef.current = null;
+          
+          // 自动语音播报AI回复
+          if (autoSpeakEnabled && lastAiResponseRef.current) {
+            await speakText(lastAiResponseRef.current);
+          }
+          
+          // 自动语音模式下，播报完成后继续监听
+          if (autoVoiceMode) {
+            setTimeout(() => startVoiceRecognition(), 500);
+          }
+        },
+        // onError
+        (error) => {
+          // 多智能体失败时，回退到讯飞星火
+          console.log('⚠️ 多智能体失败，回退到讯飞星火:', error);
+          fallbackToSpark(content, aiMessageId);
+        }
+      );
+    } else {
+      // 使用讯飞星火 API
+      console.log('✨ 使用讯飞星火 API');
+      callSparkApi(content, aiMessageId);
+    }
+  };
+
+  // 调用讯飞星火 API
+  const callSparkApi = (content: string, aiMessageId: string) => {
     // 构建对话历史
     const chatHistory: ChatMessage[] = messages
       .filter(m => m.content.trim())
@@ -169,7 +215,6 @@ export const AIConsultation = forwardRef<any, AIConsultationProps>(({ isFloating
     
     chatHistory.push({ role: 'user', content: content });
 
-    // 调用讯飞星火 API
     cancelRequestRef.current = sendToSpark(
       chatHistory,
       // onMessage - 流式更新
@@ -211,7 +256,15 @@ export const AIConsultation = forwardRef<any, AIConsultationProps>(({ isFloating
       }
     );
   };
-  
+
+  // 回退到讯飞星火（多智能体失败时）
+  const fallbackToSpark = (content: string, aiMessageId: string) => {
+    setMessages(prev => prev.map(m => 
+      m.id === aiMessageId ? { ...m, content: '正在切换到备用服务...' } : m
+    ));
+    callSparkApi(content, aiMessageId);
+  };
+
   // 使用全局语音Context播报文本（避免多个语音同时播放）
   const speakText = async (text: string): Promise<void> => {
     // 先停止所有正在播放的语音
@@ -479,7 +532,25 @@ export const AIConsultation = forwardRef<any, AIConsultationProps>(({ isFloating
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-blue-500" />
             <h3 className="font-semibold">AI健康助手</h3>
+            {/* AI引擎指示器 */}
+            <Badge 
+              variant={useMultiAgent ? "default" : "secondary"}
+              className={`ml-2 ${useMultiAgent ? 'bg-emerald-500' : 'bg-blue-500'}`}
+            >
+              {useMultiAgent ? '🤖 多智能体' : '✨ 讯飞星火'}
+            </Badge>
             <div className="flex items-center gap-2 ml-auto">
+              {/* AI引擎切换按钮 */}
+              <Button
+                variant={useMultiAgent ? "default" : "outline"}
+                size="sm"
+                onClick={() => setUseMultiAgent(!useMultiAgent)}
+                className={useMultiAgent ? 'bg-emerald-500 hover:bg-emerald-600' : ''}
+                title={useMultiAgent ? '当前：后端多智能体系统（健康管家+慢病专家+生活教练+心理关怀师）' : '当前：讯飞星火大模型'}
+              >
+                {useMultiAgent ? <Cpu className="mr-1 h-4 w-4" /> : <Sparkles className="mr-1 h-4 w-4" />}
+                {useMultiAgent ? '多智能体' : '星火'}
+              </Button>
               {/* 自动语音交互按钮 */}
               <Button
                 variant={autoVoiceMode ? "default" : "outline"}

@@ -190,19 +190,19 @@ export default function App() {
   // Step 3: Show dashboard after successful login
   if (selectedRole === 'children' && isLoggedIn) {
     return (
-      <>
+      <VoiceProvider>
         <ChildrenDashboard onLogout={handleLogout} />
         <FloatingAIAssistant ref={aiAssistantRef} />
-      </>
+      </VoiceProvider>
     );
   }
 
   if (selectedRole === 'community' && isLoggedIn) {
     return (
-      <>
+      <VoiceProvider>
         <CommunityDashboard onLogout={handleLogout} />
         <FloatingAIAssistant ref={aiAssistantRef} />
-      </>
+      </VoiceProvider>
     );
   }
 
