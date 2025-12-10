@@ -33,3 +33,8 @@ scipy>=1.7.0
 scikit-learn>=1.0.0
 scikit-fuzzy>=0.4.2
 
+# LangChain RAG依赖
+langchain>=0.1.0
+langchain-community>=0.0.10
+chromadb>=0.4.22
+

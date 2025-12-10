@@ -413,7 +413,7 @@ class BaseAgent(ABC):
     
     def _retrieve_rag_context(self, user_input: str, elderly_id: str = None) -> str:
         """
-        从RAG知识库检索相关内容
+        从RAG知识库检索相关内容（优先使用LangChain版本）
         
         Args:
             user_input: 用户输入
@@ -422,6 +422,19 @@ class BaseAgent(ABC):
         Returns:
             RAG上下文字符串，如果无结果返回空字符串
         """
+        # 优先尝试 LangChain 知识库
+        try:
+            from services.knowledge_base_langchain import langchain_knowledge_base
+            
+            if langchain_knowledge_base and langchain_knowledge_base.vectorstore:
+                context = langchain_knowledge_base.search_with_context(user_input, top_k=3)
+                if context:
+                    logger.debug(f"[{self.name}] 使用 LangChain RAG")
+                    return context
+        except Exception as e:
+            logger.debug(f"[{self.name}] LangChain RAG 失败，回退到原版: {e}")
+        
+        # 回退到原版知识库
         try:
             from services.knowledge_base import knowledge_base
             
