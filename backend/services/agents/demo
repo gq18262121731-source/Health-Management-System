@@ -1,0 +1,29 @@
+class Agent:
+    """智能体基类"""
+    def __init__(self, name, keywords):
+        self.name = name
+        self.keywords = keywords
+    
+    def confidence(self, text):
+        """计算处理置信度：关键词匹配度"""
+        return sum(1 for k in self.keywords if k in text) / len(self.keywords)
+
+# 创建4个专家智能体
+agents = [
+    Agent("慢病专家", ["血压", "血糖", "高血压", "糖尿病"]),
+    Agent("生活教练", ["运动", "睡眠", "饮食", "锻炼"]),
+    Agent("心理关怀", ["焦虑", "担心", "心情", "孤独"]),
+    Agent("健康管家", ["你好", "查询", "报告"])
+]
+
+def route(question):
+    """置信度路由：选择最合适的智能体"""
+    scores = [(a.name, a.confidence(question)) for a in agents]
+    best = max(scores, key=lambda x: x[1])
+    print(f"问题: {question}")
+    print(f"→ 路由到: {best[0]}，置信度: {best[1]:.0%}\n")
+
+# 测试路由效果
+route("我血压有点高怎么办")
+route("最近睡眠不太好")  
+route("心情有点低落")

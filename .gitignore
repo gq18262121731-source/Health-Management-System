@@ -57,3 +57,5 @@ frontend/dist/
 frontend/build/
 
 backend/logs/*.log
+
+backend/models/

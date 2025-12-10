@@ -71,13 +71,31 @@ class KnowledgeBase:
             logger.warning("知识库依赖未安装，将使用模拟模式。请运行: pip install faiss-cpu sentence-transformers numpy")
     
     def _init_model(self):
-        """初始化嵌入模型"""
+        """初始化嵌入模型（优先使用硅基流动API）"""
+        import os
+        
+        # 方法1: 使用硅基流动 API（推荐，效果更好）
+        siliconflow_key = os.getenv("SILICONFLOW_API_KEY", "")
+        if siliconflow_key:
+            try:
+                from services.siliconflow_service import siliconflow_service
+                if siliconflow_service.is_available:
+                    self._use_siliconflow = True
+                    self._siliconflow = siliconflow_service
+                    self.embedding_dim = 1024  # BGE-M3 模型维度
+                    self.embedding_model = True
+                    logger.info("使用硅基流动 BGE-M3 嵌入模型 (API)")
+                    return
+            except Exception as e:
+                logger.warning(f"硅基流动服务初始化失败: {e}")
+        
+        self._use_siliconflow = False
+        
+        # 方法2: 使用本地模型
         try:
-            import os
             import torch
             from transformers import AutoTokenizer, AutoModel
             
-            # 本地模型路径（从 ModelScope 下载）
             local_model_path = os.path.join(
                 os.path.dirname(os.path.dirname(__file__)),
                 "models", "damo", "nlp_corom_sentence-embedding_chinese-base"
@@ -90,7 +108,7 @@ class KnowledgeBase:
                 self._transformer_model.eval()
                 self._use_transformers = True
                 self.embedding_dim = 768
-                self.embedding_model = True  # 标记为已加载
+                self.embedding_model = True
                 logger.info(f"本地嵌入模型加载成功，维度: {self.embedding_dim}")
                 return
             
@@ -162,7 +180,15 @@ class KnowledgeBase:
             return np.random.rand(self.embedding_dim).astype('float32')
         
         try:
-            # 使用 transformers 本地模型
+            # 方法1: 使用硅基流动 API
+            if getattr(self, '_use_siliconflow', False):
+                embedding = self._siliconflow.get_embedding(text, model="bge-m3")
+                embedding = np.array(embedding)
+                # 归一化
+                embedding = embedding / np.linalg.norm(embedding)
+                return embedding.astype('float32')
+            
+            # 方法2: 使用 transformers 本地模型
             if getattr(self, '_use_transformers', False):
                 import torch
                 inputs = self._tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
@@ -174,7 +200,7 @@ class KnowledgeBase:
                 embedding = embedding / np.linalg.norm(embedding)
                 return embedding.astype('float32')
             
-            # 使用 SentenceTransformer
+            # 方法3: 使用 SentenceTransformer
             embedding = self.embedding_model.encode(text, normalize_embeddings=True)
             return embedding.astype('float32')
         except Exception as e:

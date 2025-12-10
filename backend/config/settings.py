@@ -57,6 +57,10 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = Field(default=None)
     OPENAI_API_BASE: Optional[str] = Field(default="https://api.openai.com/v1")
     
+    # 硅基流动配置
+    SILICONFLOW_API_KEY: Optional[str] = Field(default=None, description="硅基流动API密钥")
+    SILICONFLOW_BASE_URL: str = Field(default="https://api.siliconflow.cn/v1", description="硅基流动API地址")
+    
     # 健康阈值配置
     HEALTH_THRESHOLDS: dict = Field(default={
         "heart_rate": {"min": 60, "max": 100},
