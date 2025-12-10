@@ -61,6 +61,12 @@ class Settings(BaseSettings):
     SILICONFLOW_API_KEY: Optional[str] = Field(default=None, description="硅基流动API密钥")
     SILICONFLOW_BASE_URL: str = Field(default="https://api.siliconflow.cn/v1", description="硅基流动API地址")
     
+    # 讯飞星火配置
+    SPARK_APP_ID: Optional[str] = Field(default=None, description="讯飞星火APPID")
+    SPARK_API_KEY: Optional[str] = Field(default=None, description="讯飞星火API Key")
+    SPARK_API_SECRET: Optional[str] = Field(default=None, description="讯飞星火API Secret")
+    SPARK_API_PASSWORD: Optional[str] = Field(default=None, description="讯飞星火API Password")
+    
     # 健康阈值配置
     HEALTH_THRESHOLDS: dict = Field(default={
         "heart_rate": {"min": 60, "max": 100},
@@ -90,7 +96,7 @@ class Settings(BaseSettings):
         raise ValueError(v)
     
     class Config:
-        env_file = ".env"
+        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
         env_file_encoding = 'utf-8'
         case_sensitive = True
 

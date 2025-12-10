@@ -1,13 +1,58 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Send, Bot, User, Sparkles, Heart, Activity, Brain, Loader2 } from 'lucide-react';
+import { MessageSquare, Send, Bot, User, Sparkles, Heart, Activity, Brain, Loader2, Stethoscope, Apple, Smile } from 'lucide-react';
+
+// 智能体配置 - 独特标识
+const AGENT_CONFIG: Record<string, { icon: any; gradient: string; badgeColor: string; label: string }> = {
+  '健康管家': {
+    icon: Bot,
+    gradient: 'from-blue-500 to-cyan-500',
+    badgeColor: 'bg-blue-50 text-blue-600 border-blue-200',
+    label: '🏠 健康管家'
+  },
+  '慢病专家': {
+    icon: Stethoscope,
+    gradient: 'from-red-500 to-rose-500',
+    badgeColor: 'bg-red-50 text-red-600 border-red-200',
+    label: '🩺 慢病专家'
+  },
+  '生活教练': {
+    icon: Apple,
+    gradient: 'from-green-500 to-emerald-500',
+    badgeColor: 'bg-green-50 text-green-600 border-green-200',
+    label: '🥗 生活教练'
+  },
+  '情感关怀': {
+    icon: Smile,
+    gradient: 'from-purple-500 to-pink-500',
+    badgeColor: 'bg-purple-50 text-purple-600 border-purple-200',
+    label: '💜 情感关怀'
+  },
+  '心理关怀师': {
+    icon: Smile,
+    gradient: 'from-purple-500 to-pink-500',
+    badgeColor: 'bg-purple-50 text-purple-600 border-purple-200',
+    label: '💜 心理关怀师'
+  },
+  '系统': {
+    icon: Bot,
+    gradient: 'from-gray-400 to-gray-500',
+    badgeColor: 'bg-gray-50 text-gray-600 border-gray-200',
+    label: '⚙️ 系统'
+  }
+};
+
+// 获取智能体配置
+const getAgentConfig = (agent: string) => {
+  return AGENT_CONFIG[agent] || AGENT_CONFIG['健康管家'];
+};
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 
-// API基础URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// API基础URL（通过Vite代理，使用相对路径）
+const API_BASE_URL = '';
 
 export function ChildrenAIAssistant() {
   const [messages, setMessages] = useState([
@@ -50,7 +95,7 @@ export function ChildrenAIAssistant() {
 
     try {
       // 调用多智能体API
-      const response = await fetch(`${API_BASE_URL}/api/ai/consult/public`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/ai/consult/public`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,47 +176,52 @@ export function ChildrenAIAssistant() {
             {/* 消息列表 */}
             <ScrollArea className="flex-1 p-6" ref={scrollRef}>
               <div className="space-y-6">
-                {messages.map((message: any) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-4 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}
-                  >
-                    {/* 头像 */}
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      message.type === 'ai' 
-                        ? 'bg-gradient-to-br from-blue-500 to-cyan-500' 
-                        : 'bg-gradient-to-br from-teal-500 to-green-500'
-                    }`}>
-                      {message.type === 'ai' ? (
-                        <Bot className="h-6 w-6 text-white" />
-                      ) : (
-                        <User className="h-6 w-6 text-white" />
-                      )}
-                    </div>
-
-                    {/* 消息内容 */}
-                    <div className={`flex-1 ${message.type === 'user' ? 'flex justify-end' : ''}`}>
-                      <div className={`max-w-[80%] ${
+                {messages.map((message: any) => {
+                  const agentConfig = message.type === 'ai' ? getAgentConfig(message.agent) : null;
+                  const AgentIcon = agentConfig?.icon || Bot;
+                  
+                  return (
+                    <div
+                      key={message.id}
+                      className={`flex gap-4 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      {/* 头像 - 根据智能体显示不同颜色 */}
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br ${
                         message.type === 'ai' 
-                          ? 'bg-slate-100' 
-                          : 'bg-blue-500 text-white'
-                      } rounded-2xl p-5`}>
-                        {/* 智能体标签 */}
-                        {message.type === 'ai' && message.agent && (
-                          <Badge variant="outline" className="mb-2 text-xs bg-blue-50 text-blue-600 border-blue-200">
-                            {message.agent}
-                          </Badge>
+                          ? agentConfig?.gradient || 'from-blue-500 to-cyan-500'
+                          : 'from-teal-500 to-green-500'
+                      }`}>
+                        {message.type === 'ai' ? (
+                          <AgentIcon className="h-6 w-6 text-white" />
+                        ) : (
+                          <User className="h-6 w-6 text-white" />
                         )}
-                        <p className="text-lg leading-relaxed whitespace-pre-line">{message.content}</p>
-                        <p className={`text-sm mt-2 ${
-                          message.type === 'ai' ? 'text-muted-foreground' : 'text-blue-100'
-                        }`}>
-                          {message.timestamp}
-                        </p>
+                      </div>
+
+                      {/* 消息内容 */}
+                      <div className={`flex-1 ${message.type === 'user' ? 'flex justify-end' : ''}`}>
+                        <div className={`max-w-[80%] ${
+                          message.type === 'ai' 
+                            ? 'bg-slate-100' 
+                            : 'bg-blue-500 text-white'
+                        } rounded-2xl p-5`}>
+                          {/* 智能体标签 - 独特颜色 */}
+                          {message.type === 'ai' && message.agent && (
+                            <Badge variant="outline" className={`mb-2 text-xs ${agentConfig?.badgeColor || 'bg-blue-50 text-blue-600 border-blue-200'}`}>
+                              {agentConfig?.label || message.agent}
+                            </Badge>
+                          )}
+                          <p className="text-lg leading-relaxed whitespace-pre-line">{message.content}</p>
+                          <p className={`text-sm mt-2 ${
+                            message.type === 'ai' ? 'text-muted-foreground' : 'text-blue-100'
+                          }`}>
+                            {message.timestamp}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {/* 加载状态 */}
                 {isLoading && (

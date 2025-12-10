@@ -121,6 +121,11 @@ class MultiAgentService:
                 "user_role": user_role
             }
         
+        # ========== 智能体切换指令检测 ==========
+        switch_result = self._check_agent_switch(user_input, user_id)
+        if switch_result:
+            return switch_result
+        
         # ========== 意图识别 ==========
         intent_result = intent_recognizer.recognize(user_input, use_llm=False)
         
@@ -248,6 +253,78 @@ class MultiAgentService:
         
         # 涉及2个或以上领域，建议多智能体协作
         return keywords_count >= 2
+    
+    def _check_agent_switch(self, user_input: str, user_id: str) -> Optional[Dict[str, Any]]:
+        """
+        检测用户是否想切换智能体
+        
+        支持的指令：
+        - "转到慢病专家" / "切换到慢病专家" / "我要找慢病专家"
+        - "转到生活教练" / "帮我转到生活教练"
+        - "转到心理关怀师" / "我想和心理关怀师聊聊"
+        - "转到健康管家" / "回到健康管家"
+        """
+        import re
+        
+        # 智能体名称映射
+        agent_mapping = {
+            "慢病专家": ("慢病专家", ChronicDiseaseExpertAgent),
+            "慢病": ("慢病专家", ChronicDiseaseExpertAgent),
+            "生活教练": ("生活教练", LifestyleCoachAgent),
+            "生活": ("生活教练", LifestyleCoachAgent),
+            "心理关怀师": ("心理关怀师", EmotionalCareAgent),
+            "心理关怀": ("心理关怀师", EmotionalCareAgent),
+            "心理": ("心理关怀师", EmotionalCareAgent),
+            "情感关怀": ("心理关怀师", EmotionalCareAgent),
+            "健康管家": ("健康管家", HealthButlerAgent),
+            "管家": ("健康管家", HealthButlerAgent),
+        }
+        
+        # 切换指令模式
+        switch_patterns = [
+            r"(?:转到|切换到|帮我转到|我要找|我想找|找|呼叫|叫|换成|换到|我想和|让我和)(.+?)(?:聊聊|聊天|说话|$)",
+            r"(.+?)(?:在吗|来一下|帮帮我)",
+        ]
+        
+        for pattern in switch_patterns:
+            match = re.search(pattern, user_input)
+            if match:
+                target = match.group(1).strip()
+                for key, (agent_name, agent_class) in agent_mapping.items():
+                    if key in target:
+                        # 找到目标智能体
+                        logger.info(f"用户请求切换到智能体: {agent_name}")
+                        
+                        # 设置当前活跃智能体
+                        memory = self.get_memory(user_id)
+                        memory.set_context("active_agent", agent_name)
+                        
+                        # 获取智能体实例（通过名称查找）
+                        agent = None
+                        for role, ag in self.coordinator.agents.items():
+                            if ag.name == agent_name:
+                                agent = ag
+                                break
+                        
+                        if agent:
+                            # 生成欢迎语
+                            welcome_messages = {
+                                "慢病专家": "🩺 您好！我是慢病专家，专注于高血压、糖尿病、心脏病等慢性疾病的管理。\n\n请问您有什么慢病相关的问题想咨询？比如：\n• 血压/血糖数值解读\n• 用药注意事项\n• 慢病日常管理",
+                                "生活教练": "🥗 您好！我是生活教练，专注于健康饮食、运动锻炼和睡眠改善。\n\n请问您想了解哪方面的内容？比如：\n• 每日饮食搭配\n• 适合的运动方式\n• 改善睡眠质量",
+                                "心理关怀师": "💜 您好！我是心理关怀师，随时倾听您的心声。\n\n无论是焦虑、压力还是情绪低落，都可以和我聊聊。\n我会陪伴您，一起找到让心情变好的方法~",
+                                "健康管家": "🏠 您好！我是健康管家，您的全能健康助手。\n\n我可以帮您：\n• 解读健康数据\n• 提供日常健康建议\n• 转接专业智能体\n\n请问有什么可以帮您的？"
+                            }
+                            
+                            return {
+                                "response": welcome_messages.get(agent_name, f"已切换到{agent_name}，请问有什么可以帮您的？"),
+                                "agent": agent_name,
+                                "confidence": 1.0,
+                                "mode": "switch",
+                                "intent": {"type": "agent_switch", "target": agent_name},
+                                "user_role": "elderly"
+                            }
+        
+        return None
 
 
 # 单例实例

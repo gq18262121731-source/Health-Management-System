@@ -26,21 +26,9 @@ from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
 
-# 尝试导入 FAISS
-try:
-    import faiss
-    FAISS_AVAILABLE = True
-except ImportError:
-    FAISS_AVAILABLE = False
-    print("⚠️ FAISS 未安装，将使用简化版向量检索")
-
-# 尝试导入 sentence-transformers 用于文本向量化
-try:
-    from sentence_transformers import SentenceTransformer
-    SENTENCE_TRANSFORMER_AVAILABLE = True
-except ImportError:
-    SENTENCE_TRANSFORMER_AVAILABLE = False
-    print("⚠️ sentence-transformers 未安装，将使用简化版文本向量化")
+# FAISS 和 sentence-transformers 已禁用，使用简化版
+FAISS_AVAILABLE = False
+SENTENCE_TRANSFORMER_AVAILABLE = False
 
 
 @dataclass

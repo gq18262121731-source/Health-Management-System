@@ -99,7 +99,7 @@ class AIService:
         conversation_history: Optional[list] = None,
         use_knowledge_base: bool = True,
         use_multi_agent: bool = True
-    ) -> str:
+    ) -> Dict[str, Any]:
         """
         进行AI健康咨询 - 集成多智能体协作系统
         
@@ -113,7 +113,7 @@ class AIService:
             use_multi_agent: 是否使用多智能体系统
         
         Returns:
-            AI回复文本
+            包含 response 和 agent 的字典
         """
         # ========== 多智能体系统处理 ==========
         # 优先使用多智能体系统处理专业健康问题
@@ -138,11 +138,12 @@ class AIService:
                 if confidence >= 0.7 and agent_response:
                     logger.info(f"多智能体处理成功: agent={agent_name}, confidence={confidence:.2f}, mode={mode}")
                     
-                    # 添加智能体标识
-                    if mode == "multi":
-                        return agent_response
-                    else:
-                        return f"【{agent_name}】\n\n{agent_response}"
+                    return {
+                        "response": agent_response,
+                        "agent": agent_name,
+                        "confidence": confidence,
+                        "mode": mode
+                    }
                 
                 # 置信度较低时，将多智能体回复作为参考，继续调用大模型增强
                 logger.info(f"多智能体置信度较低({confidence:.2f})，将调用大模型增强回复")
@@ -153,7 +154,7 @@ class AIService:
         # ========== 大模型 API 调用 ==========
         # 如果API密钥未配置，返回模拟回复
         if not self.provider or not self.api_key:
-            return self._get_mock_response(user_input)
+            return {"response": self._get_mock_response(user_input), "agent": "健康管家"}
         
         try:
             # RAG: 从知识库检索相关知识
@@ -235,74 +236,26 @@ class AIService:
                 if response.status_code != 200:
                     error_msg = response.text
                     logger.error(f"AI API调用失败: {response.status_code} - {error_msg}")
-                    return self._get_mock_response(user_input)
+                    return {"response": self._get_mock_response(user_input), "agent": "健康管家"}
                 
                 result = response.json()
                 ai_response = result["choices"][0]["message"]["content"].strip()
                 
                 logger.info(f"AI咨询成功 ({self.provider}): 用户问题长度={len(user_input)}, 回复长度={len(ai_response)}")
                 
-                return ai_response
+                return {"response": ai_response, "agent": "健康管家"}
             
         except httpx.TimeoutException:
             logger.error("AI API调用超时")
-            return self._get_mock_response(user_input)
+            return {"response": self._get_mock_response(user_input), "agent": "健康管家"}
         except Exception as e:
             logger.error(f"AI咨询失败: {str(e)}")
             # 发生错误时返回模拟回复作为备用
-            return self._get_mock_response(user_input)
+            return {"response": self._get_mock_response(user_input), "agent": "健康管家"}
     
     def _get_mock_response(self, user_input: str) -> str:
-        """获取模拟回复（当API不可用时）"""
-        input_lower = user_input.lower()
-        
-        if any(keyword in input_lower for keyword in ['头晕', '晕', '眩晕']):
-            return """根据您的描述，头晕可能与以下因素有关：
-
-1. **睡眠不足**：深睡时间较短会影响大脑休息
-2. **血压波动**：血压变化可能导致头晕
-3. **血糖问题**：建议检查是否按时进餐
-
-**建议措施**：
-- 保证每晚7-8小时充足睡眠
-- 避免突然起身，动作要缓慢
-- 多喝温水，保持水分充足
-- 如果症状持续或加重，请及时就医
-
-⚠️ 如果出现剧烈头痛、意识模糊等紧急情况，请立即就医！"""
-        
-        if any(keyword in input_lower for keyword in ['血压', '高血压']):
-            return """关于血压管理，建议您：
-
-1. **定期监测**：每天早晚各测一次，记录数据
-2. **饮食控制**：减少盐分摄入（每日<6克），多吃蔬果
-3. **适量运动**：每天散步30分钟，避免剧烈运动
-4. **规律作息**：保证充足睡眠，避免熬夜
-5. **情绪管理**：保持心情平和，避免过度紧张
-
-⚠️ 如果血压持续超过140/90 mmHg，或出现胸闷、胸痛等症状，请立即就医！"""
-        
-        if any(keyword in input_lower for keyword in ['睡眠', '失眠', '睡不着']):
-            return """改善睡眠质量，您可以尝试：
-
-1. **规律作息**：固定睡觉和起床时间
-2. **睡前准备**：睡前1小时关闭电子设备，可以听轻音乐
-3. **环境优化**：保持卧室安静、昏暗、温度适宜
-4. **放松技巧**：做深呼吸、温水泡脚
-5. **避免行为**：下午后避免饮用咖啡、浓茶
-
-建议记录一周的睡眠情况，如果问题持续，可以咨询医生。"""
-        
-        # 默认回复
-        return """我理解您的问题。基于健康数据，我建议您：
-
-1. 注意休息，保证充足睡眠
-2. 保持规律的作息时间
-3. 适当运动，但避免剧烈活动
-4. 饮食清淡，多喝水
-5. 继续监测生命体征
-
-⚠️ 如有任何不适加重的情况，请及时就医。您还有其他问题吗？"""
+        """获取错误提示（当API不可用时）"""
+        return "抱歉，AI服务暂时不可用，请检查API配置后重试。"
 
 
 # 创建全局AI服务实例

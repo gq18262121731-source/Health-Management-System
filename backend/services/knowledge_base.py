@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 try:
     from langchain_text_splitters import RecursiveCharacterTextSplitter
     from langchain_community.vectorstores import Chroma
-    from langchain_community.embeddings import HuggingFaceEmbeddings
     from langchain_core.documents import Document
     HAS_LANGCHAIN = True
 except ImportError:
@@ -91,29 +90,18 @@ class LangChainKnowledgeBase:
     def _init_components(self):
         """初始化 LangChain 组件"""
         try:
-            # 1. 初始化嵌入模型（优先使用硅基流动API，避免SSL问题）
+            # 1. 初始化嵌入模型（只使用硅基流动API，避免HuggingFace下载问题）
             self.embeddings = None
             
-            # 方法1: 硅基流动 API（推荐）
             try:
                 from services.siliconflow_service import siliconflow_service
                 if siliconflow_service and siliconflow_service.is_available:
                     self.embeddings = SiliconFlowEmbeddings()
                     logger.info("✅ LangChain 使用硅基流动 BGE-M3 嵌入模型")
+                else:
+                    logger.warning("硅基流动服务不可用，知识库功能将受限")
             except Exception as e:
                 logger.warning(f"硅基流动初始化失败: {e}")
-            
-            # 方法2: 本地模型（回退）
-            if self.embeddings is None:
-                try:
-                    self.embeddings = HuggingFaceEmbeddings(
-                        model_name="moka-ai/m3e-base",
-                        model_kwargs={'device': 'cpu'},
-                        encode_kwargs={'normalize_embeddings': True}
-                    )
-                    logger.info("使用本地 m3e-base 嵌入模型")
-                except Exception as e:
-                    logger.warning(f"本地模型加载失败: {e}")
             
             # 2. 初始化文本分割器
             self.text_splitter = RecursiveCharacterTextSplitter(
@@ -461,6 +449,9 @@ _chroma_path = os.path.join(_project_root, "chroma_db")
 _kb_path = os.path.join(_project_root, "knowledge-base")
 
 langchain_knowledge_base = LangChainKnowledgeBase(persist_dir=_chroma_path)
+
+# 兼容旧接口
+knowledge_base = langchain_knowledge_base
 
 # 自动导入知识库文档
 if HAS_LANGCHAIN and langchain_knowledge_base.vectorstore:

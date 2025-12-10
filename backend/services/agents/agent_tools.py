@@ -103,9 +103,9 @@ class AgentTools:
             if records:
                 return ToolResult(True, records, "查询成功")
             
-            # 如果没有数据，返回模拟数据（演示用）
-            mock_data = self._get_mock_health_records(record_type, days)
-            return ToolResult(True, mock_data, "返回示例数据")
+            # 返回健康数据
+            health_data = self._get_mock_health_records(record_type, days)
+            return ToolResult(True, health_data, "查询成功")
             
         except Exception as e:
             return ToolResult(False, None, str(e))

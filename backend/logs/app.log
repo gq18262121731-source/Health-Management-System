@@ -1389,3 +1389,343 @@ WHERE users.id = ?]
 2025-12-10 13:41:27,126 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
 2025-12-10 13:41:27,126 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
 2025-12-10 13:41:27,338 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-10 14:28:52,829 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 14:28:52,829 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 14:28:52,836 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 14:31:53,012 - services.agents.semantic_matcher - INFO - semantic_matcher.py:214 - 正在加载语义模型: paraphrase-multilingual-MiniLM-L12-v2
+2025-12-10 14:31:53,018 - sentence_transformers.SentenceTransformer - INFO - SentenceTransformer.py:219 - Use pytorch device_name: cpu
+2025-12-10 14:31:53,019 - sentence_transformers.SentenceTransformer - INFO - SentenceTransformer.py:227 - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-12-10 14:31:53,042 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: d8df3cb9-3bbf-462a-9e8b-494ee357932b)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:31:53,043 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 1s [Retry 1/5].
+2025-12-10 14:31:54,071 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 2ddfb726-55fb-41c1-8443-27a982b10ba3)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:31:54,072 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 2s [Retry 2/5].
+2025-12-10 14:31:56,109 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: e69be656-26eb-49e4-bf3f-ca7e6b17f079)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:31:56,109 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 4s [Retry 3/5].
+2025-12-10 14:32:00,143 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 876bf598-4209-4eb3-b727-b06e84f0ef03)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:32:00,144 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 4/5].
+2025-12-10 14:32:08,180 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 14d5236c-38e7-4b28-bd34-5863b109761a)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:32:08,182 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 5/5].
+2025-12-10 14:32:16,235 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0c6c0ee9-62b7-42c8-8c69-de0c94ecf9eb)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:32:16,237 - sentence_transformers.SentenceTransformer - WARNING - SentenceTransformer.py:2098 - No sentence-transformers model found with name sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2. Creating a new one with mean pooling.
+2025-12-10 14:32:16,276 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0ef3bde1-3c0f-400c-b32f-5fd4598694fb)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:32:16,277 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 1s [Retry 1/5].
+2025-12-10 14:32:17,318 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0c92298a-ad92-46cb-8e67-8529a74f41bc)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:32:17,319 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 2s [Retry 2/5].
+2025-12-10 14:32:19,369 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: d5549b42-aef2-4f5d-892f-e14330a9f85d)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:32:19,369 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 4s [Retry 3/5].
+2025-12-10 14:32:23,382 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 46dcceee-fade-4d18-82e8-9b5b1bd46db2)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:32:23,382 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 4/5].
+2025-12-10 14:32:31,394 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0092351a-e23e-42ff-be11-8c957e7f0747)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:32:31,395 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 5/5].
+2025-12-10 14:32:39,412 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: e12a2b69-bcb1-49a8-8324-13665e4cbb14)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:32:39,412 - services.agents.semantic_matcher - ERROR - semantic_matcher.py:225 - 语义模型加载失败: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: e12a2b69-bcb1-49a8-8324-13665e4cbb14)')
+2025-12-10 14:32:39,413 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 14:32:52,554 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 159
+2025-12-10 14:32:52,554 - services.ai_service - INFO - ai_service.py:148 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 14:32:52,554 - services.ai_service - WARNING - ai_service.py:171 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 14:32:52,798 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 14:33:03,209 - services.ai_service - INFO - ai_service.py:243 - AI咨询成功 (deepseek): 用户问题长度=3, 回复长度=424
+2025-12-10 14:33:48,073 - services.agents.semantic_matcher - INFO - semantic_matcher.py:214 - 正在加载语义模型: paraphrase-multilingual-MiniLM-L12-v2
+2025-12-10 14:33:48,077 - sentence_transformers.SentenceTransformer - INFO - SentenceTransformer.py:219 - Use pytorch device_name: cpu
+2025-12-10 14:33:48,077 - sentence_transformers.SentenceTransformer - INFO - SentenceTransformer.py:227 - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-12-10 14:33:48,107 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: b00e80a0-05a4-44b0-aecc-59268e351d83)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:33:48,108 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 1s [Retry 1/5].
+2025-12-10 14:33:49,128 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0dfa2212-13a7-45c1-bbe1-f898290a5dfa)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:33:49,132 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 2s [Retry 2/5].
+2025-12-10 14:33:51,169 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: a47b9974-c366-4b6f-9dbc-3174ad42497f)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:33:51,171 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 4s [Retry 3/5].
+2025-12-10 14:33:55,218 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 2ffd0916-c970-4c2b-90c8-8a49b55cff04)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:33:55,220 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 4/5].
+2025-12-10 14:34:03,272 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: e8571972-2cd1-43da-96fc-7b0f14500892)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:34:03,272 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 5/5].
+2025-12-10 14:34:11,302 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 2a358fd8-b1e1-4a96-90b7-59da07f341d1)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:34:11,302 - sentence_transformers.SentenceTransformer - WARNING - SentenceTransformer.py:2098 - No sentence-transformers model found with name sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2. Creating a new one with mean pooling.
+2025-12-10 14:34:11,314 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 5a0db882-a7a9-4e52-acd2-a1aa60c67adc)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:34:11,314 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 1s [Retry 1/5].
+2025-12-10 14:34:12,324 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 2f05f1f9-6cdf-47e4-9926-d371a0c168f5)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:34:12,326 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 2s [Retry 2/5].
+2025-12-10 14:34:14,365 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: cdf7f47d-eb7d-42dc-8158-a363affd9715)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:34:14,368 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 4s [Retry 3/5].
+2025-12-10 14:34:18,397 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0ab22ee8-622c-4126-b987-bd1b1f55f14b)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:34:18,397 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 4/5].
+2025-12-10 14:34:26,435 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: acb464d7-988f-4e5f-b81a-fd65c22901ff)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:34:26,435 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 5/5].
+2025-12-10 14:34:34,465 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 430eb950-cc8a-4c04-940f-6d25bade2a64)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:34:34,465 - services.agents.semantic_matcher - ERROR - semantic_matcher.py:225 - 语义模型加载失败: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 430eb950-cc8a-4c04-940f-6d25bade2a64)')
+2025-12-10 14:34:34,466 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 14:34:34,466 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 14:34:55,021 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 148
+2025-12-10 14:34:55,021 - services.ai_service - INFO - ai_service.py:148 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 14:34:55,021 - services.ai_service - WARNING - ai_service.py:171 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 14:34:55,211 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 14:35:00,098 - services.ai_service - INFO - ai_service.py:243 - AI咨询成功 (deepseek): 用户问题长度=8, 回复长度=195
+2025-12-10 14:35:55,103 - services.agents.semantic_matcher - INFO - semantic_matcher.py:214 - 正在加载语义模型: paraphrase-multilingual-MiniLM-L12-v2
+2025-12-10 14:35:55,103 - sentence_transformers.SentenceTransformer - INFO - SentenceTransformer.py:219 - Use pytorch device_name: cpu
+2025-12-10 14:35:55,103 - sentence_transformers.SentenceTransformer - INFO - SentenceTransformer.py:227 - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-12-10 14:35:55,136 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: b9a31ff7-0f6f-4c38-a95a-b0b2d444ec9f)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:35:55,137 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 1s [Retry 1/5].
+2025-12-10 14:35:56,154 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 14f75866-fb11-4188-8561-d3b174f1c9bd)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:35:56,154 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 2s [Retry 2/5].
+2025-12-10 14:35:58,167 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 8816a8bd-ca8e-421b-b293-ca25bc74a098)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:35:58,168 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 4s [Retry 3/5].
+2025-12-10 14:36:02,207 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 9d997373-e969-451d-b1a5-a412175163b5)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:36:02,207 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 4/5].
+2025-12-10 14:36:10,231 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: c9cd2d77-0f52-46e7-b6e2-eebf42b80f93)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:36:10,231 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 5/5].
+2025-12-10 14:36:18,261 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0d9eba63-1122-4459-8387-55a495c905f3)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/./modules.json
+2025-12-10 14:36:18,261 - sentence_transformers.SentenceTransformer - WARNING - SentenceTransformer.py:2098 - No sentence-transformers model found with name sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2. Creating a new one with mean pooling.
+2025-12-10 14:36:18,273 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 0f202827-8402-4cac-b251-be9892d80c50)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:36:18,276 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 1s [Retry 1/5].
+2025-12-10 14:36:19,290 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 86539dbd-04e4-4a24-ae5b-528975215267)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:36:19,290 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 2s [Retry 2/5].
+2025-12-10 14:36:21,304 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: a83c86c5-533d-45c8-825f-95e15761876e)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:36:21,304 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 4s [Retry 3/5].
+2025-12-10 14:36:25,316 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 3f3e463a-ea6c-49b8-b79c-c211ea55c636)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:36:25,318 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 4/5].
+2025-12-10 14:36:33,338 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: 1ae29201-3a59-45c6-9a00-7ac6ba55a002)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:36:33,338 - huggingface_hub.utils._http - WARNING - _http.py:328 - Retrying in 8s [Retry 5/5].
+2025-12-10 14:36:41,363 - huggingface_hub.utils._http - WARNING - _http.py:319 - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: d07758d7-bbc2-4c00-8175-c02fe8687687)')' thrown while requesting HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json
+2025-12-10 14:36:41,364 - services.agents.semantic_matcher - ERROR - semantic_matcher.py:225 - 语义模型加载失败: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')))"), '(Request ID: d07758d7-bbc2-4c00-8175-c02fe8687687)')
+2025-12-10 14:36:41,364 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: greeting, 置信度: 0.65, 角色: elderly
+2025-12-10 14:36:41,364 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 14:36:56,417 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 72
+2025-12-10 14:36:56,419 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.90, mode=single
+2025-12-10 14:41:07,523 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 14:41:07,523 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 14:41:07,530 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 14:41:30,989 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: greeting, 置信度: 0.65, 角色: elderly
+2025-12-10 14:41:38,960 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 89
+2025-12-10 14:41:38,960 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.90, mode=single
+2025-12-10 14:49:03,879 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 14:49:03,881 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 14:49:03,887 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 14:50:24,547 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 14:50:38,954 - services.agents.response_checker - WARNING - response_checker.py:144 - [质量检查] 发现问题: ['包含危险建议关键词: 保证'], 风险等级: medium
+2025-12-10 14:50:38,955 - services.agents.base_agent - WARNING - base_agent.py:300 - [健康管家] 回答质量检查未通过: ['包含危险建议关键词: 保证']
+2025-12-10 14:50:38,957 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 158
+2025-12-10 14:50:38,958 - services.ai_service - INFO - ai_service.py:148 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 14:50:38,958 - services.ai_service - WARNING - ai_service.py:171 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 14:50:40,345 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 14:50:45,584 - services.ai_service - INFO - ai_service.py:243 - AI咨询成功 (deepseek): 用户问题长度=3, 回复长度=180
+2025-12-10 14:53:00,598 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 14:53:00,598 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 14:53:18,452 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 162
+2025-12-10 14:53:18,452 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 14:54:18,691 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 14:54:18,692 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 14:54:36,025 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 115
+2025-12-10 14:54:36,025 - services.ai_service - INFO - ai_service.py:148 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 14:54:36,027 - services.ai_service - WARNING - ai_service.py:171 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 14:54:36,198 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 14:54:41,630 - services.ai_service - INFO - ai_service.py:243 - AI咨询成功 (deepseek): 用户问题长度=6, 回复长度=201
+2025-12-10 15:20:21,314 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 15:20:21,315 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 15:20:38,089 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 147
+2025-12-10 15:20:38,089 - services.ai_service - INFO - ai_service.py:148 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 15:20:38,092 - services.ai_service - WARNING - ai_service.py:171 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 15:20:38,269 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 15:20:54,099 - services.ai_service - INFO - ai_service.py:243 - AI咨询成功 (deepseek): 用户问题长度=8, 回复长度=686
+2025-12-10 15:23:29,961 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 15:23:29,962 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 15:23:29,968 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 15:23:51,659 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 15:24:16,011 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 167
+2025-12-10 15:24:16,011 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 15:24:31,602 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: anxiety, 置信度: 0.65, 角色: elderly
+2025-12-10 15:24:31,604 - services.agents.base_agent - INFO - base_agent.py:201 - [心理关怀师] 对话记忆已注入
+2025-12-10 15:24:54,558 - services.agents.base_agent - INFO - base_agent.py:248 - [心理关怀师] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 212
+2025-12-10 15:24:54,559 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=心理关怀师, confidence=0.95, mode=single
+2025-12-10 15:28:16,780 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: diet, 置信度: 0.65, 角色: elderly
+2025-12-10 15:28:16,781 - services.agents.base_agent - INFO - base_agent.py:201 - [生活教练] 对话记忆已注入
+2025-12-10 15:28:39,458 - services.agents.base_agent - INFO - base_agent.py:248 - [生活教练] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 240
+2025-12-10 15:28:39,460 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=生活教练, confidence=0.90, mode=single
+2025-12-10 15:28:39,463 - services.agents.multi_agent_service - INFO - multi_agent_service.py:127 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 15:28:39,465 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 15:29:00,777 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 201
+2025-12-10 15:29:00,777 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 15:29:00,778 - services.ai_service - WARNING - ai_service.py:172 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 15:29:01,161 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 15:29:10,468 - services.ai_service - INFO - ai_service.py:244 - AI咨询成功 (deepseek): 用户问题长度=8, 回复长度=406
+2025-12-10 15:33:37,180 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 15:33:37,182 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 15:33:37,187 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 15:34:29,798 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 慢病专家
+2025-12-10 15:34:29,798 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 慢病专家
+2025-12-10 15:34:29,798 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 15:34:45,888 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 137
+2025-12-10 15:34:45,888 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 15:34:45,888 - services.ai_service - WARNING - ai_service.py:172 - 知识库检索失败: LangChainKnowledgeBase.search() got an unexpected keyword argument 'elderly_id'
+2025-12-10 15:34:46,141 - httpx - INFO - _client.py:1740 - HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-10 15:34:53,015 - services.ai_service - INFO - ai_service.py:244 - AI咨询成功 (deepseek): 用户问题长度=8, 回复长度=307
+2025-12-10 15:43:55,619 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 15:43:55,619 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 15:43:55,626 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 15:44:08,137 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 慢病专家
+2025-12-10 15:44:08,137 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=1.00, mode=single
+2025-12-10 15:44:55,271 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 心理关怀师
+2025-12-10 15:44:55,272 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=心理关怀师, confidence=1.00, mode=single
+2025-12-10 15:45:03,495 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 生活教练
+2025-12-10 15:45:03,495 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=生活教练, confidence=1.00, mode=single
+2025-12-10 15:45:35,616 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 生活教练
+2025-12-10 15:45:35,617 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=生活教练, confidence=1.00, mode=single
+2025-12-10 15:45:58,663 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: diet, 置信度: 0.65, 角色: elderly
+2025-12-10 15:46:19,109 - services.agents.base_agent - INFO - base_agent.py:248 - [生活教练] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 146
+2025-12-10 15:46:19,110 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=生活教练, confidence=0.90, mode=single
+2025-12-10 15:49:23,009 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 慢病专家
+2025-12-10 15:49:23,011 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=1.00, mode=single
+2025-12-10 15:49:38,982 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 15:49:38,983 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 15:49:55,158 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 186
+2025-12-10 15:49:55,159 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 15:50:29,078 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: control_query, 置信度: 0.98, 角色: elderly
+2025-12-10 15:50:29,079 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 15:50:29,083 - services.agents.agent_tools - INFO - agent_tools.py:77 - 工具调用成功: query_health_records
+2025-12-10 15:50:29,084 - services.agents.base_agent - INFO - base_agent.py:213 - [健康管家] 工具调用结果已注入
+2025-12-10 15:50:54,303 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:True, 追问:False, 记忆:True)，回复长度: 237
+2025-12-10 15:50:54,304 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.70, mode=single
+2025-12-10 18:12:40,265 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 18:12:40,265 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 18:12:40,277 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 18:24:23,313 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 慢病专家
+2025-12-10 18:24:23,314 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=1.00, mode=single
+2025-12-10 18:24:42,505 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 18:24:57,046 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 106
+2025-12-10 18:24:57,048 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 18:25:44,636 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 18:25:44,637 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 18:26:03,550 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 153
+2025-12-10 18:26:03,550 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 18:27:33,819 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: control_query, 置信度: 0.98, 角色: elderly
+2025-12-10 18:27:33,821 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:27:33,824 - services.agents.agent_tools - INFO - agent_tools.py:77 - 工具调用成功: query_health_records
+2025-12-10 18:27:33,824 - services.agents.base_agent - INFO - base_agent.py:213 - [健康管家] 工具调用结果已注入
+2025-12-10 18:27:57,019 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:True, 追问:False, 记忆:True)，回复长度: 186
+2025-12-10 18:27:57,019 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.70, mode=single
+2025-12-10 18:27:57,122 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-10 18:31:43,932 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 18:31:43,932 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 18:31:44,022 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 18:35:01,557 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 18:35:01,558 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 18:35:01,624 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 18:36:03,515 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 18:36:03,516 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 18:36:03,524 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 18:40:39,577 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 18:40:55,085 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 141
+2025-12-10 18:40:55,086 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 18:41:08,886 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 18:41:08,886 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:41:28,955 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 143
+2025-12-10 18:41:28,957 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 18:42:03,906 - services.agents.multi_agent_service - INFO - multi_agent_service.py:296 - 用户请求切换到智能体: 慢病专家
+2025-12-10 18:42:03,908 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=1.00, mode=single
+2025-12-10 18:42:14,474 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 18:42:14,475 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:42:37,747 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 138
+2025-12-10 18:42:37,747 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 18:43:12,840 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 18:43:12,842 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 18:43:37,436 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 178
+2025-12-10 18:43:37,436 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 18:44:27,368 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 18:44:27,370 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:44:45,402 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 174
+2025-12-10 18:44:45,404 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 18:45:50,524 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 18:45:50,524 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 18:46:11,985 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 166
+2025-12-10 18:46:11,985 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 18:48:04,526 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: greeting, 置信度: 0.65, 角色: elderly
+2025-12-10 18:48:04,526 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:48:20,041 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 137
+2025-12-10 18:48:20,041 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.90, mode=single
+2025-12-10 18:48:33,827 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: greeting, 置信度: 0.65, 角色: elderly
+2025-12-10 18:48:33,829 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:48:50,760 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 128
+2025-12-10 18:48:50,760 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.90, mode=single
+2025-12-10 18:50:50,543 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 18:50:50,546 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:51:10,490 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 139
+2025-12-10 18:51:10,491 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 18:52:46,289 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 18:52:46,290 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 18:53:04,372 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 157
+2025-12-10 18:53:04,374 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 18:57:56,269 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-10 18:58:52,705 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 18:58:52,705 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 18:58:52,711 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 18:59:24,757 - main - INFO - main.py:40 - 正在关闭智慧健康管理系统后端服务...
+2025-12-10 19:12:09,731 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 19:12:09,731 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 19:12:09,740 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 19:12:57,898 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 19:13:14,343 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 172
+2025-12-10 19:13:14,344 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 19:27:06,866 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 19:27:06,866 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 19:27:06,871 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 19:28:45,932 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 19:28:51,760 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 79
+2025-12-10 19:28:51,761 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.70, mode=single
+2025-12-10 19:29:33,448 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: symptom_report, 置信度: 0.65, 角色: elderly
+2025-12-10 19:29:47,772 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 137
+2025-12-10 19:29:47,775 - services.ai_service - INFO - ai_service.py:149 - 多智能体置信度较低(0.50)，将调用大模型增强回复
+2025-12-10 19:32:04,884 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:32:20,339 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 164
+2025-12-10 19:32:20,340 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:32:52,910 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:32:52,910 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 19:33:11,307 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 146
+2025-12-10 19:33:11,307 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:33:24,131 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:33:24,131 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 19:33:47,210 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 112
+2025-12-10 19:33:47,210 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:36:14,921 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 19:36:14,921 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 19:36:14,932 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 19:36:50,510 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:37:20,317 - services.agents.response_checker - WARNING - response_checker.py:144 - [质量检查] 发现问题: ['包含危险建议关键词: 停药'], 风险等级: medium
+2025-12-10 19:37:20,317 - services.agents.base_agent - WARNING - base_agent.py:300 - [慢病专家] 回答质量检查未通过: ['包含危险建议关键词: 停药']
+2025-12-10 19:37:20,319 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 219
+2025-12-10 19:37:20,319 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:37:22,384 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: anxiety, 置信度: 0.65, 角色: elderly
+2025-12-10 19:37:22,384 - services.agents.base_agent - INFO - base_agent.py:201 - [心理关怀师] 对话记忆已注入
+2025-12-10 19:37:48,326 - services.agents.base_agent - INFO - base_agent.py:248 - [心理关怀师] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 178
+2025-12-10 19:37:48,326 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=心理关怀师, confidence=0.95, mode=single
+2025-12-10 19:38:56,128 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: greeting, 置信度: 0.65, 角色: elderly
+2025-12-10 19:38:56,128 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 19:39:16,883 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 107
+2025-12-10 19:39:16,885 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.90, mode=single
+2025-12-10 19:40:53,821 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:40:53,822 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 19:41:12,596 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 198
+2025-12-10 19:41:12,597 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:45:00,076 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:45:00,077 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 19:45:22,469 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 134
+2025-12-10 19:45:22,471 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:45:43,554 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: unknown, 置信度: 0.30, 角色: elderly
+2025-12-10 19:45:43,554 - services.agents.base_agent - INFO - base_agent.py:201 - [健康管家] 对话记忆已注入
+2025-12-10 19:46:01,793 - services.agents.base_agent - INFO - base_agent.py:248 - [健康管家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 142
+2025-12-10 19:46:01,793 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=健康管家, confidence=0.70, mode=single
+2025-12-10 19:47:08,319 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:47:08,319 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 19:47:27,139 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:False, 追问:False, 记忆:True)，回复长度: 126
+2025-12-10 19:47:27,141 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:50:25,366 - main - INFO - main.py:25 - 正在启动智慧健康管理系统后端服务...
+2025-12-10 19:50:25,366 - main - INFO - main.py:26 - 系统版本: 1.0.0
+2025-12-10 19:50:25,374 - main - INFO - main.py:32 - 数据库表创建成功
+2025-12-10 19:50:28,391 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:50:28,403 - services.agents.agent_tools - INFO - agent_tools.py:77 - 工具调用成功: query_health_records
+2025-12-10 19:50:28,403 - services.agents.base_agent - INFO - base_agent.py:213 - [慢病专家] 工具调用结果已注入
+2025-12-10 19:50:45,288 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:True, 追问:False, 记忆:True)，回复长度: 200
+2025-12-10 19:50:45,290 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single
+2025-12-10 19:54:06,574 - services.agents.multi_agent_service - INFO - multi_agent_service.py:132 - 意图识别: blood_pressure, 置信度: 0.65, 角色: elderly
+2025-12-10 19:54:06,576 - services.agents.base_agent - INFO - base_agent.py:201 - [慢病专家] 对话记忆已注入
+2025-12-10 19:54:06,577 - services.agents.agent_tools - INFO - agent_tools.py:77 - 工具调用成功: query_health_records
+2025-12-10 19:54:06,579 - services.agents.base_agent - INFO - base_agent.py:213 - [慢病专家] 工具调用结果已注入
+2025-12-10 19:54:26,227 - services.agents.base_agent - INFO - base_agent.py:248 - [慢病专家] LLM调用成功(角色:elderly, RAG:True, 工具:True, 追问:False, 记忆:True)，回复长度: 196
+2025-12-10 19:54:26,227 - services.ai_service - INFO - ai_service.py:139 - 多智能体处理成功: agent=慢病专家, confidence=0.95, mode=single

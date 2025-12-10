@@ -332,17 +332,10 @@ class IntentRecognizer:
         return entities
     
     def _init_semantic_matcher(self):
-        """初始化语义匹配器（延迟加载，首次使用时才加载模型）"""
-        try:
-            from .semantic_matcher import semantic_matcher, HAS_SENTENCE_TRANSFORMERS
-            if HAS_SENTENCE_TRANSFORMERS:
-                self.semantic_matcher = semantic_matcher
-                logger.info("✅ 语义匹配器已注册（延迟加载）")
-            else:
-                logger.info("ℹ️ 语义匹配不可用，使用规则匹配")
-        except Exception as e:
-            logger.warning(f"语义匹配器加载失败: {e}")
-            self.semantic_matcher = None
+        """初始化语义匹配器（禁用，避免HuggingFace下载问题）"""
+        # 禁用语义匹配器，使用规则匹配 + LLM 兜底
+        self.semantic_matcher = None
+        logger.info("ℹ️ 语义匹配已禁用，使用规则匹配 + LLM")
     
     def _semantic_match(self, text: str) -> Optional[Tuple[IntentType, float]]:
         """使用语义匹配识别意图"""

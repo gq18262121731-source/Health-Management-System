@@ -338,7 +338,7 @@ async def ai_consult_public(request: PublicConsultRequest):
         
         # 调用AI服务
         try:
-            ai_response = await ai_service.consult(
+            ai_result = await ai_service.consult(
                 user_input=request.user_input,
                 user_role=request.user_role,
                 elderly_id=None,
@@ -354,11 +354,16 @@ async def ai_consult_public(request: PublicConsultRequest):
                 detail=f"AI服务暂时不可用: {str(e)}"
             )
         
+        # 解析返回结果
+        response_text = ai_result.get("response", "") if isinstance(ai_result, dict) else ai_result
+        agent_name = ai_result.get("agent", "健康管家") if isinstance(ai_result, dict) else "健康管家"
+        
         return {
             "status": "success",
             "data": {
                 "query": request.user_input,
-                "response": ai_response,
+                "response": response_text,
+                "agent": agent_name,
                 "user_role": request.user_role,
                 "health_data_used": False,
                 "knowledge_base_used": True
