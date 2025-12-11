@@ -200,21 +200,24 @@ export const HealthRadarWithAssessment: React.FC<HealthRadarWithAssessmentProps>
     }
   }, []);
 
-  // 加载中或未加载时显示加载状态
-  if (!vizData || !vizData.overview || isLoading) {
-    return (
-      <Card className="bg-gradient-to-br from-purple-100 to-purple-50 border-purple-200">
-        <CardContent className="py-8">
-          <div className="text-center space-y-4">
-            <Activity className={`h-12 w-12 mx-auto text-purple-500 ${isLoading ? 'animate-spin' : ''}`} />
-            <div>
-              <h3 className="text-xl font-semibold text-purple-900">健康数据分析</h3>
-              <p className="text-purple-700 mt-1">{isLoading ? '正在加载健康数据...' : '准备加载数据'}</p>
+  // 加载中显示加载动画，数据未加载完成时返回 null
+  if (!vizData || !vizData.overview) {
+    if (isLoading) {
+      return (
+        <Card className="bg-gradient-to-br from-purple-100 to-purple-50 border-purple-200">
+          <CardContent className="py-8">
+            <div className="text-center space-y-4">
+              <Activity className="h-12 w-12 mx-auto text-purple-500 animate-spin" />
+              <div>
+                <h3 className="text-xl font-semibold text-purple-900">健康数据分析</h3>
+                <p className="text-purple-700 mt-1">正在加载健康数据...</p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+          </CardContent>
+        </Card>
+      );
+    }
+    return null;
   }
 
   return (
