@@ -318,6 +318,7 @@ class PublicConsultRequest(BaseModel):
     """公开AI咨询请求（无需认证）"""
     user_input: str = Field(..., description="用户输入的问题", min_length=1, max_length=2000)
     user_role: str = Field(default="elderly", description="用户角色: elderly/children/community")
+    session_id: Optional[str] = Field(default=None, description="会话ID（用于多轮对话）")
 
 
 @router.post("/consult/public")
@@ -345,7 +346,8 @@ async def ai_consult_public(request: PublicConsultRequest):
                 health_data=None,
                 conversation_history=[],
                 use_knowledge_base=True,
-                use_multi_agent=True
+                use_multi_agent=True,
+                session_id=request.session_id
             )
         except Exception as e:
             logger.error(f"AI服务调用失败: {str(e)}")

@@ -8,8 +8,17 @@
 """
 
 import logging
+import json
 from typing import Dict, List, Optional, Any
 
+try:
+    import redis
+    HAS_REDIS = True
+except ImportError:
+    HAS_REDIS = False
+    redis = None
+
+from config.settings import settings
 from .base_agent import AgentRole, AgentMessage, AgentMemory, MessageType
 from .agent_coordinator import AgentCoordinator
 from .health_butler import HealthButlerAgent
@@ -17,6 +26,7 @@ from .chronic_disease_expert import ChronicDiseaseExpertAgent
 from .lifestyle_coach import LifestyleCoachAgent
 from .emotional_care import EmotionalCareAgent
 from .intent_recognizer import intent_recognizer, IntentType
+from .agent_tools import agent_tools
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +60,20 @@ class MultiAgentService:
             
         self.coordinator = AgentCoordinator()
         self.memories: Dict[str, AgentMemory] = {}  # 用户记忆缓存
+        self.conversation_states: Dict[str, List[Dict]] = {}  # 多轮对话状态（内存备用）
+        
+        # Redis 连接（用于持久化对话状态）
+        self.redis_client = None
+        self.redis_ttl = 86400  # 1天过期
+        if HAS_REDIS:
+            try:
+                redis_url = getattr(settings, 'REDIS_URL', 'redis://localhost:6379/0')
+                self.redis_client = redis.from_url(redis_url, decode_responses=True)
+                self.redis_client.ping()  # 测试连接
+                logger.info(f"Redis 连接成功，对话状态将持久化存储（TTL: {self.redis_ttl}秒）")
+            except Exception as e:
+                logger.warning(f"Redis 连接失败: {e}，将使用内存存储")
+                self.redis_client = None
         
         # 注册智能体
         self._register_agents()
@@ -80,6 +104,54 @@ class MultiAgentService:
         if user_id not in self.memories:
             self.memories[user_id] = AgentMemory(user_id=user_id)
         return self.memories[user_id]
+    
+    def _get_conversation_key(self, user_id: str, session_id: str = None) -> str:
+        """生成对话状态的存储键"""
+        return f"conv:{user_id}:{session_id or 'default'}"
+    
+    def _get_conversation_state(self, user_id: str, session_id: str = None) -> List[Dict]:
+        """获取对话状态（优先从 Redis 读取）"""
+        key = self._get_conversation_key(user_id, session_id)
+        
+        # 优先从 Redis 读取
+        if self.redis_client:
+            try:
+                data = self.redis_client.get(key)
+                if data:
+                    return json.loads(data)
+            except Exception as e:
+                logger.warning(f"Redis 读取失败: {e}")
+        
+        # 降级到内存
+        return self.conversation_states.get(key, [])
+    
+    def _save_conversation_state(self, user_id: str, session_id: str, state: List[Dict]):
+        """保存对话状态（优先存入 Redis）"""
+        key = self._get_conversation_key(user_id, session_id)
+        
+        # 优先存入 Redis
+        if self.redis_client:
+            try:
+                self.redis_client.setex(key, self.redis_ttl, json.dumps(state, ensure_ascii=False))
+                return
+            except Exception as e:
+                logger.warning(f"Redis 写入失败: {e}")
+        
+        # 降级到内存
+        self.conversation_states[key] = state
+    
+    def _clear_conversation_state(self, user_id: str, session_id: str = None):
+        """清除对话状态"""
+        key = self._get_conversation_key(user_id, session_id)
+        
+        if self.redis_client:
+            try:
+                self.redis_client.delete(key)
+            except Exception as e:
+                logger.warning(f"Redis 删除失败: {e}")
+        
+        if key in self.conversation_states:
+            del self.conversation_states[key]
     
     def process(
         self,
@@ -121,6 +193,55 @@ class MultiAgentService:
                 "user_role": user_role
             }
         
+        # 获取用户记忆
+        memory = self.get_memory(user_id)
+        
+        # ========== 多轮对话处理（反问逻辑）==========
+        conversation_history = self._get_conversation_state(user_id, session_id)
+        
+        # 使用 agent_tools 处理多轮对话
+        conv_result = agent_tools.process_conversation(user_input, conversation_history)
+        
+        logger.info(f"多轮对话分析: action={conv_result['action']}, topic={conv_result.get('topic')}")
+        
+        # 如果是反问或工具调用，直接返回结果
+        if conv_result["action"] in ["ask_for_data", "call_tool", "analyze_data"]:
+            # 保存对话状态（使用 Redis 持久化）
+            self._save_conversation_state(user_id, session_id, conversation_history + [conv_result])
+            
+            # 保存到智能体记忆
+            memory.add_message(AgentMessage(
+                type=MessageType.USER_INPUT,
+                content=user_input
+            ))
+            memory.add_message(AgentMessage(
+                type=MessageType.AGENT_RESPONSE,
+                content=conv_result["response"]
+            ))
+            
+            # 保存健康上下文
+            if conv_result.get("tool_result"):
+                memory.set_context("last_health_query", {
+                    "topic": conv_result.get("topic"),
+                    "tool_called": conv_result.get("tool_called"),
+                    "timestamp": __import__('datetime').datetime.now().isoformat()
+                })
+            
+            logger.info(f"多轮对话处理: action={conv_result['action']}, topic={conv_result.get('topic')}")
+            
+            return {
+                "response": conv_result["response"],
+                "agent": "健康管家",
+                "confidence": 1.0,
+                "mode": "conversation",
+                "intent": {"type": conv_result["action"], "topic": conv_result.get("topic")},
+                "user_role": user_role,
+                "tool_called": conv_result.get("tool_called", False)
+            }
+        
+        # 清除对话状态（新话题）
+        self._clear_conversation_state(user_id, session_id)
+        
         # ========== 智能体切换指令检测 ==========
         switch_result = self._check_agent_switch(user_input, user_id)
         if switch_result:
@@ -146,8 +267,6 @@ class MultiAgentService:
                 "intent": intent_result.to_dict(),
                 "user_role": user_role
             }
-        
-        memory = self.get_memory(user_id)
         
         # 使用 session_id 或 user_id 作为会话标识
         effective_session_id = session_id or user_id

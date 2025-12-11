@@ -39,6 +39,11 @@ class AIService:
             self.api_key = getattr(settings, 'DEEPSEEK_API_KEY', None)
             self.api_base = getattr(settings, 'DEEPSEEK_API_BASE', 'https://api.deepseek.com/v1')
             self.model = 'deepseek-chat'
+        elif self.provider == 'siliconflow':
+            # 硅基流动（支持 DeepSeek 等多种模型）
+            self.api_key = getattr(settings, 'SILICONFLOW_API_KEY', None)
+            self.api_base = getattr(settings, 'SILICONFLOW_BASE_URL', 'https://api.siliconflow.cn/v1')
+            self.model = 'deepseek-ai/DeepSeek-V3'
         elif self.provider == 'zhipu':
             self.api_key = getattr(settings, 'ZHIPU_API_KEY', None)
             self.api_base = getattr(settings, 'ZHIPU_API_BASE', 'https://open.bigmodel.cn/api/paas/v4')
@@ -52,7 +57,7 @@ class AIService:
             self.provider = None
         
         if not self.api_key and self.provider:
-            logger.warning(f"{self.provider} API_KEY未配置，AI服务将使用模拟模式")
+            # 使用多智能体服务，此处不显示警告
             self.provider = None
     
     def _build_system_prompt(self, user_role: str = "elderly", health_data: Optional[Dict[str, Any]] = None) -> str:
@@ -98,7 +103,8 @@ class AIService:
         health_data: Optional[Dict[str, Any]] = None,
         conversation_history: Optional[list] = None,
         use_knowledge_base: bool = True,
-        use_multi_agent: bool = True
+        use_multi_agent: bool = True,
+        session_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         进行AI健康咨询 - 集成多智能体协作系统
@@ -126,13 +132,26 @@ class AIService:
                 result = multi_agent_service.process(
                     user_input=user_input,
                     user_id=elderly_id or "default",
+                    user_role=user_role,
                     health_data=health_data,
-                    mode=mode
+                    mode=mode,
+                    session_id=session_id
                 )
                 
                 agent_response = result.get("response", "")
                 agent_name = result.get("agent", "健康管家")
                 confidence = result.get("confidence", 0)
+                result_mode = result.get("mode", mode)
+                
+                # 多轮对话模式（反问/工具调用）直接返回
+                if result_mode == "conversation" and agent_response:
+                    logger.info(f"多轮对话处理: agent={agent_name}, confidence={confidence:.2f}")
+                    return {
+                        "response": agent_response,
+                        "agent": agent_name,
+                        "confidence": confidence,
+                        "mode": result_mode
+                    }
                 
                 # 如果多智能体置信度高(>=0.7)，直接返回其回复
                 if confidence >= 0.7 and agent_response:
